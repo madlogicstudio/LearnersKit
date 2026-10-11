@@ -4,17 +4,18 @@
 
 :root {
   --background: #EFEFF4;
-  --foreground: #2E2C39;
+  --foreground: #24232E;
   --primary: #C9A0DC;
   --secondary:  #8A75CF;
-  --accent: #f3ebf7;
+  --accent: #e4ddfa;
 
   --border: #E5E7EB;
   --card: #FFFFFF;
+
 }
 
 .dark {
-  --background: #2E2C39;
+  --background: #24232E;
   --foreground: #EFEFF4;
   --primary: #C9A0DC;
   --secondary:  #8A75CF ;
@@ -37,11 +38,13 @@ body {
   background: var(--background);
   color: var(--foreground);
   font-family: var(--font-sans);
+  scroll-behavior: smooth;
 }
 
 ::selection {
-  background: var(--secondary);
-  color: #1A233A;
+  background: var(--primary);
+  color: var(--accent);
+  
 }
 
 .transition{
@@ -49,79 +52,8 @@ body {
 }
 
 .hovered:hover{
-  background: linear-gradient(
-    110deg,
-    #96B4EB 0%,
-    #F6E06E 30%,
-    #D789B9 50%
-  );
+  color: #C9A0DC;
   transition: 0.3s ease-in-out;
-
-  -webkit-background-clip: text;
-  background-clip: text;
-  -webkit-text-fill-color: transparent;
-}
-
-.header-hovered:hover{
-  background: linear-gradient(
-    110deg,
-    #96B4EB 0%,
-    #F6E06E 50%,
-    #D789B9 100%
-  );
-  transition: 0.2s ease-in-out;
-
-  padding-bottom: 3px;
-  border-bottom: 2px solid var(--secondary);
-
-  -webkit-background-clip: text;
-  background-clip: text;
-  -webkit-text-fill-color: transparent;
-}
-
-.button-hovered {
-  position: relative;
-  overflow: hidden;
-  background: transparent;
-}
-
-.button-hovered::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-
-  background: linear-gradient(
-    110deg,
-    #96B4EB 0%,
-    #F6E06E 50%,
-    #D789B9 100%
-  );
-
-  opacity: 0;
-  transition: opacity 0.3s ease-in-out;
-}
-
-.button-hovered:hover::before {
-  opacity: 1;
-}
-
-.button-hovered > * {
-  position: relative;
-  z-index: 1;
-}
-
-.rainbow-text{
-  background: linear-gradient(
-    110deg,
-    #96B4EB 0%,
-    #F6E06E 30%,
-    #D789B9 50%
-  );
-  transition: 0.3s ease-in-out;
-
-  -webkit-background-clip: text;
-  background-clip: text;
-  -webkit-text-fill-color: transparent;
 }
 
 @keyframes fadeIn {
@@ -152,30 +84,6 @@ body {
 
 .idle-float {
   animation: idle-float 3s ease-in-out infinite;
-}
-
-.rainbow-button {
-  background: linear-gradient(
-    110deg,
-    #96B4EB 0%,
-    #F6E06E 50%,
-    #D789B9 100%
-  );
-
-  color: #1A233A;
-}
-
-.color-picker-square,
-.color-picker-square .react-colorful__saturation,
-.color-picker-square .react-colorful__hue,
-.color-picker-square .react-colorful__alpha {
-  border-radius: 0 !important;
-}
-
-.color-picker-square .react-colorful__saturation-pointer,
-.color-picker-square .react-colorful__hue-pointer,
-.color-picker-square .react-colorful__alpha-pointer {
-  border-radius: 0 !important;
 }
 
 @keyframes cardPop {
@@ -216,4 +124,29 @@ input[type="number"]::-webkit-outer-spin-button {
 
 input[type="number"] {
   -moz-appearance: textfield;
+}
+
+@keyframes borderAnim {
+  from {
+    width: 0;
+  }
+
+  to {
+    width: 100%;
+  }
+}
+
+.header-hovered:hover {
+  position: relative;
+}
+
+.header-hovered:hover::after {
+  content: "";
+  position: absolute;
+  bottom: -2px;
+  left: 0;
+  width: 100%;
+  height: 2px;
+  background: #C9A0DC;
+  animation: borderAnim 0.3s ease-in;
 }

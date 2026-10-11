@@ -1,20 +1,21 @@
 'use client'
 
-import { ThemeToggle } from "@/components/ui/ThemeToggle"
-import { useRouter } from "next/navigation"
+import Header from "@/components/landing/Header";
+import Footer from "@/components/landing/Footer";
+import Hero from "@/components/landing/Hero";
+import Solution from "@/components/landing/Solution";
+import Features from "@/components/landing/Features";
+import Cta from "@/components/landing/Cta";
 
 function page() {
-
-  const router = useRouter();
-
   return (
-    <div className='h-screen w-full flex flex-col items-center justify-center gap-3'>
-      Imagine the landing page is here.
-      <ThemeToggle />
-      <div onClick={() => router.push("/signup")} className="cursor-pointer p-3 bg-[var(--primary)]/60 text-black hover:text-white
-        transition duration-300 ease">
-        <span>Go to Signup page.</span>
-      </div>
+    <div className='h-auto w-full'>
+      <Header />
+      <Hero />
+      <Solution />
+      <Features />
+      <Cta />
+      <Footer />
     </div>
   )
 }

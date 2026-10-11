@@ -19,7 +19,7 @@ export function ThemeToggle() {
     }
 
     return (
-        <div className="p-1 border border-foreground/20 w-20 rounded-full flex flex-row items-center justify-between fadeIn">
+        <div className="p-1 border border-foreground/20 hover:border-[var(--primary)] transition w-20 rounded-full flex flex-row items-center justify-between fadeIn">
             
             <button className={`${currentTheme === "system" ? "bg-foreground/10" : ""} p-1 rounded-full cursor-pointer`}
                 onClick={() => {

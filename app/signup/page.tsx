@@ -3,22 +3,51 @@
 import Link from "next/link";
 import Image from "next/image";
 import { useState, useEffect } from "react";
+import { createClient } from "@/lib/supabase/client";
 
 function page() {
 
-    const [loading, setLoading] = useState(false);
+    const supabase = createClient();
 
-    // useEffect(() => {
-    //     const {
-    //         data: { subscription },
-    //     } = supabase.auth.onAuthStateChange((event, session) => {
-    //         if (session && event === "SIGNED_IN") {
-    //             window.location.replace("/dashboard");
-    //         }
-    //     });
+    useEffect(() => {
+        const {
+            data: { subscription },
+        } = supabase.auth.onAuthStateChange(
+            async (event, session) => {
+                if (session && event === "SIGNED_IN") {
+                    const { data: profile, error } = await supabase
+                        .from("profiles")
+                        .select("role")
+                        .eq("id", session.user.id)
+                        .single();
 
-    //     return () => subscription.unsubscribe();
-    // }, []);
+                    if (error || !profile) {
+                        console.error("Failed to fetch user role:", error);
+                        return;
+                    }
+
+                    switch (profile.role) {
+                        case "admin":
+                            window.location.replace("/admin/dashboard");
+                            break;
+
+                        case "educator":
+                            window.location.replace("/educator/dashboard");
+                            break;
+
+                        case "student":
+                            window.location.replace("/student/dashboard");
+                            break;
+
+                        default:
+                            window.location.replace("/login");
+                    }
+                }
+            }
+        );
+
+        return () => subscription.unsubscribe();
+    }, [supabase]);
 
     return (
         <section className="fadeIn h-screen w-full flex flex-col items-center justify-center sm:p-24 p-0 bg-[var(--background)] gap-3">
@@ -41,19 +70,22 @@ function page() {
 
                         <span className="sm:text-lg text-md font-foreground/80 text-center mb-12">Choose a role that you wanted to sign up.</span>
 
-                        <Link href="/signup/admin" className="flex flex-row items-center justify-center w-full p-3 bg-[var(--accent)] cursor-pointer">
+                        <Link href="/signup/admin" className="flex flex-row items-center justify-center w-full p-3 cursor-pointer
+                            bg-[var(--accent)] hover:bg-[#24232E] text-[#24232E] hover:text-[#EFEFF4] transition rounded-lg">
                             <span className="text-md">Admin</span>
                         </Link>
-                        <Link href="/signup/educator" className="flex flex-row items-center justify-center w-full p-3 bg-[var(--accent)] cursor-pointer">
+                        <Link href="/signup/educator" className="flex flex-row items-center justify-center w-full p-3 cursor-pointer
+                            bg-[var(--accent)] hover:bg-[#24232E] text-[#24232E] hover:text-[#EFEFF4] transition rounded-lg">
                             <span className="text-md">Educator</span>
                         </Link>
-                        <Link href="/signup/student" className="flex flex-row items-center justify-center w-full p-3 bg-[var(--accent)] cursor-pointer">
+                        <Link href="/signup/student" className="flex flex-row items-center justify-center w-full p-3 cursor-pointer
+                            bg-[var(--accent)] hover:bg-[#24232E] text-[#24232E] hover:text-[#EFEFF4] transition rounded-lg">
                             <span className="text-md">Student</span>
                         </Link>
 
                     </div>
 
-                    <p className="font-sans mt-3 text-center sm:text-md text-sm text-foreground/80">
+                    <p className="font-sans mt-3 text-center text-md text-foreground/80">
                         Already have an account?{" "}
                         <Link href="/login" className="ml-1 font-bold text-[var(--primary)]/80 transition hover:text-[var(--secondary)]">
                             Login

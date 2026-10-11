@@ -22,7 +22,6 @@ function page() {
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState("");
     const [success, setSuccess] = useState("");
-    const role = "admin";
 
     const handleSignup = async (e: React.FormEvent) => {
         e.preventDefault();
