@@ -16,7 +16,7 @@ function Cta() {
                     </span>
                     <Link href="/signup" className="w-[240px] px-4 py-3 bg-[var(--primary)] dark:bg-[var(--accent)] hover:bg-[#24232E] hover:text-[#EFEFF4] text-background 
                         rounded-lg transition duration-300 ease cursor-pointer flex flex-row items-center justify-center gap-3">
-                        <span className="text-xs">Get Started</span>
+                        <span className="text-sm">Get Started</span>
                         <ArrowRight size={16} />
                     </Link>
                 </div> 
