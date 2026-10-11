@@ -55,7 +55,7 @@ function page() {
             <div className="font-sans h-full lg:max-w-[1280px] w-full rounded-xl bg-white/10 shadow-xl backdrop-blur-xl dark:border-white/10 dark:bg-white/5
                 flex flex-row-reverse items-center">
 
-                <div className="flex-1 h-full sm:flex hidden flex-col items-center justify-center gap-3 bg-[var(--accent)] dark:bg-[var(--primary)] rounded-xl rounded-l-none">
+                <div className="flex-1 h-full sm:flex hidden flex-col items-center justify-center gap-3 bg-[var(--accent)] dark:bg-[var(--secondary)] rounded-xl rounded-l-none">
 
                     <Image src="/images/Signup-image.svg" height={480} width={480} alt="Login Illustration" className="" loading="eager" />
 
@@ -71,15 +71,15 @@ function page() {
                         <span className="sm:text-lg text-md font-foreground/80 text-center mb-12">Choose a role that you wanted to sign up.</span>
 
                         <Link href="/signup/admin" className="flex flex-row items-center justify-center w-full p-3 cursor-pointer
-                            bg-[var(--accent)] hover:bg-[#24232E] text-[#24232E] hover:text-[#EFEFF4] transition rounded-lg">
+                            bg-[var(--accent)] hover:bg-[#24232E] dark:hover:bg-[var(--secondary)] text-[#24232E] hover:text-[#EFEFF4] transition rounded-lg">
                             <span className="text-md">Admin</span>
                         </Link>
                         <Link href="/signup/educator" className="flex flex-row items-center justify-center w-full p-3 cursor-pointer
-                            bg-[var(--accent)] hover:bg-[#24232E] text-[#24232E] hover:text-[#EFEFF4] transition rounded-lg">
+                            bg-[var(--accent)] hover:bg-[#24232E] dark:hover:bg-[var(--secondary)] text-[#24232E] hover:text-[#EFEFF4] transition rounded-lg">
                             <span className="text-md">Educator</span>
                         </Link>
                         <Link href="/signup/student" className="flex flex-row items-center justify-center w-full p-3 cursor-pointer
-                            bg-[var(--accent)] hover:bg-[#24232E] text-[#24232E] hover:text-[#EFEFF4] transition rounded-lg">
+                            bg-[var(--accent)] hover:bg-[#24232E] dark:hover:bg-[var(--secondary)] text-[#24232E] hover:text-[#EFEFF4] transition rounded-lg">
                             <span className="text-md">Student</span>
                         </Link>
 

@@ -142,7 +142,7 @@ function page() {
             <div className="font-sans h-full lg:max-w-[1280px] w-full rounded-xl bg-white/10 shadow-xl backdrop-blur-xl dark:border-white/10 dark:bg-white/5
                 flex flex-row-reverse items-center">
 
-                <div className="flex-1 h-full sm:flex hidden flex-col items-center justify-center gap-3 bg-[var(--accent)] dark:bg-[var(--primary)] rounded-xl rounded-l-none">
+                <div className="flex-1 h-full sm:flex hidden flex-col items-center justify-center gap-3 bg-[var(--accent)] dark:bg-[var(--secondary)] rounded-xl rounded-l-none">
 
                     <Image src="/images/Signup-image-admin.svg" height={480} width={480} alt="Login Illustration" className="" loading="eager" />
 
@@ -161,7 +161,7 @@ function page() {
                         </div>
                         <span className="block sm:hidden text-md">Create your admin account</span>
 
-                        <button type="button" onClick={handleGoogleSignup} disabled={loading} className="w-full mt-6 flex flex-row items-center justify-center gap-3 p-3 rounded-lg bg-[var(--accent)] hover:bg-[#EFEFF4]/60 transition cursor-pointer">
+                        <button type="button" onClick={handleGoogleSignup} disabled={loading} className="w-full mt-6 flex flex-row items-center justify-center gap-3 p-3 rounded-lg bg-[#EFEFF4] hover:bg-[var(--accent)] dark:hover:bg-[var(--primary)] transition cursor-pointer">
                             <FcGoogle size={24} />
                             <span className="text-sm text-[#2E2C39]">{loading ? "Connecting to Google..." : "Continue with Google"}</span>
                         </button>
@@ -292,7 +292,7 @@ function page() {
 
                         <button type="submit" disabled={loading}
                             className="group flex h-12 w-full cursor-pointer items-center justify-center gap-2 rounded-md bg-[var(--primary)] transition duration-300 ease-in-out
-                            text-sm font-bold text-white shadow-lg disabled:cursor-not-allowed disabled:opacity-60 hover:bg-[#2E2C39]">
+                            text-sm font-bold text-white shadow-lg disabled:cursor-not-allowed disabled:opacity-60 hover:bg-[var(--secondary)]">
                             {loading ? (
                                 <>
                                     <span className="h-4 w-4 animate-spin rounded-full border-2 border-white/30 border-t-white" />
