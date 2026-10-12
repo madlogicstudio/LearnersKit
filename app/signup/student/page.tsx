@@ -187,7 +187,7 @@ function page() {
                         </div>
                         <span className="block sm:hidden text-md">Create your student account</span>
 
-                        <button type="button" onClick={handleGoogleSignup} disabled={loading} className="w-full mt-6 flex flex-row items-center justify-center gap-3 p-3 rounded-lg bg-[var(--accent)] hover:bg-[var(--primary)] transition cursor-pointer">
+                        <button type="button" onClick={handleGoogleSignup} disabled={loading} className="w-full mt-6 flex flex-row items-center justify-center gap-3 p-3 rounded-lg bg-[#EFEFF4] hover:bg-[var(--accent)] dark:hover:bg-[var(--primary)] transition cursor-pointer">
                             <FcGoogle size={24} />
                             <span className="text-sm text-[#2E2C39]">{loading ? "Connecting to Google..." : "Continue with Google"}</span>
                         </button>

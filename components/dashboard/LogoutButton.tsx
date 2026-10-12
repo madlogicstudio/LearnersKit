@@ -2,6 +2,7 @@
 
 import { LogOut } from "lucide-react";
 import { useLogout } from "@/lib/hooks/useLogout";
+import { Ellipsis } from "lucide-react";
 
 export default function LogoutButton() {
     const { logout, loading, error } = useLogout();
@@ -11,11 +12,22 @@ export default function LogoutButton() {
             <button
                 onClick={logout}
                 disabled={loading}
-                className="font-sans bg-[var(--primary)]/60 transition duration-300 ease cursor-pointer max-w-[160px]
-                flex w-full items-center gap-3 rounded-lg px-4 py-3 text-sm transition-colors hover:bg-red-500/10 hover:text-red-500 disabled:opacity-50"
+                title="Logout"
+                className="font-sans bg-[var(--primary)] dark:bg-foreground/20 transition duration-300 ease cursor-pointer text-white
+                flex w-full items-center gap-2 rounded-lg px-3 py-2 transition-colors hover:bg-red-500/10 hover:text-red-500 disabled:opacity-50"
             >
-                <LogOut size={16} />
-                {loading ? "Logging out..." : "Log out"}
+                {loading ?
+                    <>
+                        <Ellipsis size={14} /> 
+                        <span className="text-sm">Logging out</span>
+                    </> 
+                    : 
+                    <>
+                        <LogOut size={14} /> 
+                        <span className="text-sm">Log out</span>
+                    </>
+                    
+                }
             </button>
 
             {error && (
