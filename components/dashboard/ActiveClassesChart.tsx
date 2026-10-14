@@ -38,7 +38,7 @@ export default function ActiveClassesChart() {
     );
 
     return (
-        <section className="w-full rounded-xl border border-gray-200 bg-white p-5 shadow-sm dark:border-gray-800 dark:bg-gray-950">
+        <section className="w-full rounded-xl border border-gray-200 bg-white p-5 shadow-sm dark:border-foreground/10 dark:bg-[var(--card)]">
             <div className="mb-5">
                 <h2 className="text-xl font-semibold text-foreground/80 dark:text-gray-100">
                     Active Classes
@@ -52,15 +52,15 @@ export default function ActiveClassesChart() {
                 <ResponsiveContainer width="100%" height="100%">
                 <PieChart>
                     <Pie
-                    data={departmentData}
-                    dataKey="classes"
-                    nameKey="department"
-                    cx="50%"
-                    cy="50%"
-                    innerRadius={65}
-                    outerRadius={95}
-                    paddingAngle={3}
-                    stroke="none"
+                        data={departmentData}
+                        dataKey="classes"
+                        nameKey="department"
+                        cx="50%"
+                        cy="50%"
+                        innerRadius={65}
+                        outerRadius={95}
+                        paddingAngle={3}
+                        stroke="none"
                     >
                     {departmentData.map((entry, index) => (
                         <Cell

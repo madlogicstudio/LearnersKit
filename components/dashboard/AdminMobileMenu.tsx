@@ -29,14 +29,14 @@ export const AdminMobileMenu = ({isActive, setIsActive}: AdminMobileMenu) => {
             </div>
 
             <div ref={menuRef} className={`w-full h-screen lg:hidden flex flex-col items-start justify-start gap-3 
-                bg-[var(--background)] fixed top-0 left-0 transition-transform duration-300 p-3
+                bg-background dark:bg-[var(--card)] fixed top-0 left-0 transition-transform duration-300 p-3 z-10 
                 ${navOpen ? "translate-x-0" : "-translate-x-full"}
                 ${!navOpen ? "-translate-x-full" : "translate-x-0"}`}>
                 
                 <div className="h-full w-full flex flex-col items-start gap-6 ">
 
                     <div className="flex flex-row items-center gap-3 items-end">
-                        <div className="bg-[var(--primary)]/60 transition duration-300 ease cursor-pointer text-white
+                        <div className="bg-[var(--primary)]/80 transition duration-300 ease cursor-pointer text-white
                             items-center gap-3 rounded-lg p-2 sm:hidden flex">
                             <X size={18} onClick={() => setNavOpen(false)}/>
                         </div>
@@ -53,37 +53,55 @@ export const AdminMobileMenu = ({isActive, setIsActive}: AdminMobileMenu) => {
 
                         <button className={`${isActive === "dashboard" ? "bg-[var(--accent)] dark:bg-foreground/10" : ""}
                             w-full hover:bg-foreground/10 px-3 py-2 rounded-lg transition cursor-pointer flex flex-row items-center gap-3`}
-                            onClick={() => setIsActive("dashboard")}>
+                            onClick={() => {
+                                setIsActive("dashboard");
+                                setNavOpen(false);
+                            }}>
                             <Grid2X2 size={26} className="text-[var(--primary)]"/>
                             <span className="text-foreground/80">Dashboard</span>
                         </button>
                         <button className={`${isActive === "students" ? "bg-[var(--accent)] dark:bg-foreground/10" : ""}
                             w-full hover:bg-foreground/10 px-3 py-2 rounded-lg transition cursor-pointer flex flex-row items-center gap-3`}
-                            onClick={() => setIsActive("students")}>
+                            onClick={() => {
+                                setIsActive("students");
+                                setNavOpen(false);
+                            }}>
                             <Users size={26} className="text-[var(--primary)]"/>
                             <span className="text-foreground/80">Students</span>
                         </button>
                         <button className={`${isActive === "teachers" ? "bg-[var(--accent)] dark:bg-foreground/10" : ""}
                             w-full hover:bg-foreground/10 px-3 py-2 rounded-lg transition cursor-pointer flex flex-row items-center gap-3`}
-                            onClick={() => setIsActive("teachers")}>
+                            onClick={() => {
+                                setIsActive("teachers");
+                                setNavOpen(false);
+                            }}>
                             <GraduationCap size={26} className="text-[var(--primary)]"/>
                             <span className="text-foreground/80">Teachers</span>
                         </button>
                         <button className={`${isActive === "classes" ? "bg-[var(--accent)] dark:bg-foreground/10" : ""}
                             w-full hover:bg-foreground/10 px-3 py-2 rounded-lg transition cursor-pointer flex flex-row items-center gap-3`}
-                            onClick={() => setIsActive("classes")}>
+                            onClick={() => {
+                                setIsActive("classes");
+                                setNavOpen(false);
+                            }}>
                             <Square size={26} className="text-[var(--primary)]"/>
                             <span className="text-foreground/80">Classes</span>
                         </button>
                         <button className={`${isActive === "subjects" ? "bg-[var(--accent)] dark:bg-foreground/10" : ""}
                             w-full hover:bg-foreground/10 px-3 py-2 rounded-lg transition cursor-pointer flex flex-row items-center gap-3`}
-                            onClick={() => setIsActive("subjects")}>
+                            onClick={() => {
+                                setIsActive("subjects");
+                                setNavOpen(false);
+                            }}>
                             <BookOpen size={26} className="text-[var(--primary)]"/>
                             <span className="text-foreground/80">Subjects</span>
                         </button>
                         <button className={`${isActive === "reports" ? "bg-[var(--accent)] dark:bg-foreground/10" : ""}
                             w-full hover:bg-foreground/10 px-3 py-2 rounded-lg transition cursor-pointer flex flex-row items-center gap-3`}
-                            onClick={() => setIsActive("reports")}>
+                            onClick={() => {
+                                setIsActive("reports");
+                                setNavOpen(false);
+                            }}>
                             <ChartPie size={26} className="text-[var(--primary)]"/>
                             <span className="text-foreground/80">Reports</span>
                         </button>
@@ -93,13 +111,19 @@ export const AdminMobileMenu = ({isActive, setIsActive}: AdminMobileMenu) => {
                     <div className="mt-auto fadeIn w-full flex flex-col items-center gap-3 text-sm">
                         <button className={`${isActive === "settings" ? "bg-[var(--accent)] dark:bg-foreground/10" : ""}
                             w-full hover:bg-foreground/10 px-3 py-2 rounded-lg transition cursor-pointer flex flex-row items-center gap-3`}
-                            onClick={() => setIsActive("settings")}>
+                            onClick={() => {
+                                setIsActive("settings");
+                                setNavOpen(false);
+                            }}>
                             <Settings size={26} className="text-[var(--primary)]"/>
                             <span className="text-foreground/80">Settings</span>
                         </button>
                         <button className={`${isActive === "logout" ? "bg-[var(--accent)] dark:bg-foreground/10" : ""}
                             w-full hover:bg-foreground/10 px-3 py-2 rounded-lg transition cursor-pointer flex flex-row items-center gap-3`}
-                            onClick={() => setIsActive("logout")}>
+                            onClick={() => {
+                                setIsActive("logout");
+                                setNavOpen(false);
+                            }}>
                             <LogOut size={26} className="text-[var(--primary)]"/>
                             <span className="text-foreground/80">Logout</span>
                         </button>

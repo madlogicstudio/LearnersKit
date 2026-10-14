@@ -52,7 +52,10 @@ function page() {
             options: {
                 emailRedirectTo: `${window.location.origin}/auth/callback`,
                 captchaToken,
-            },
+                data: {
+                    role: "admin",
+                },
+            },    
         });
 
         if (error) {
@@ -76,23 +79,31 @@ function page() {
 
     };
 
+    
     const handleGoogleSignup = async () => {
         setError("");
         setSuccess("");
         setLoading(true);
 
-        const { error } = await supabase.auth.signInWithOAuth({
+        const { data, error } = await supabase.auth.signInWithOAuth({
             provider: "google",
             options: {
-                redirectTo: `${window.location.origin}/auth/callback`,
+                redirectTo: `${window.location.origin}/auth/callback?role=admin`,
             },
         });
 
         if (error) {
             setError(error.message);
             setLoading(false);
+            return;
+        }
+
+        if (!data.url) {
+            setError("Unable to start Google signup. Please try again.");
+            setLoading(false);
         }
     };
+
 
     useEffect(() => {
         const {

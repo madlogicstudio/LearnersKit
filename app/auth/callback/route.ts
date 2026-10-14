@@ -8,7 +8,7 @@ export async function GET(request: Request) {
 
     if (!code) {
         return NextResponse.redirect(
-        `${origin}/login?error=missing_code`
+            `${origin}/login?error=missing_code`
         );
     }
 
@@ -19,71 +19,82 @@ export async function GET(request: Request) {
 
     if (error) {
         return NextResponse.redirect(
-        `${origin}/login?error=verification_failed`
+            `${origin}/login?error=verification_failed`
         );
     }
 
     // Email verification can return to the signup page.
     if (next === "verify-email") {
         return NextResponse.redirect(
-        `${origin}/signup/student?verified=true`
+            `${origin}/signup/student?verified=true`
         );
     }
 
-    // Get the authenticated user's role from the database.
+    // Get the authenticated user first.
     const {
         data: { user },
     } = await supabase.auth.getUser();
 
     if (!user) {
         return NextResponse.redirect(
-        `${origin}/login?error=authentication_failed`
+            `${origin}/login?error=authentication_failed`
         );
     }
 
-    const { data: profile, error: profileError } = await supabase
-        .from("profiles")
-        .select("role, onboarding_completed")
-        .eq("id", user.id)
-        .maybeSingle();
+    // Read and validate the requested signup role.
+    const requestedRole = searchParams.get("role");
+    const allowedRoles = ["admin", "educator", "student"];
 
-    if (profileError || !profile) {
-        return NextResponse.redirect(
-        `${origin}/login?error=profile_missing`
-        );
-    }
+    if (
+        requestedRole &&
+        allowedRoles.includes(requestedRole)
+    ) {
+        const { error: updateError } = await supabase
+            .from("profiles")
+            .update({ role: requestedRole })
+            .eq("id", user.id);
 
-    // TODO: Replace these with your onboarding routes
-    // when your onboarding pages are ready.
-    if (!profile.onboarding_completed) {
-        switch (profile.role) {
-        case "admin":
-            return NextResponse.redirect(
-            `${origin}/admin/dashboard`
+        if (updateError) {
+            console.error(
+                "Failed to update user role:",
+                updateError
             );
-        case "educator":
+
             return NextResponse.redirect(
-            `${origin}/educator/dashboard`
-            );
-        default:
-            return NextResponse.redirect(
-            `${origin}/student/dashboard`
+                `${origin}/login?error=role_update_failed`
             );
         }
     }
 
+    // Fetch the profile after the role update.
+    const { data: profile, error: profileError } =
+        await supabase
+            .from("profiles")
+            .select("role, onboarding_completed")
+            .eq("id", user.id)
+            .maybeSingle();
+
+    if (profileError || !profile) {
+        return NextResponse.redirect(
+            `${origin}/login?error=profile_missing`
+        );
+    }
+
+    // Redirect according to the saved database role.
     switch (profile.role) {
         case "admin":
-        return NextResponse.redirect(
-            `${origin}/admin/dashboard`
-        );
+            return NextResponse.redirect(
+                `${origin}/admin/dashboard`
+            );
+
         case "educator":
-        return NextResponse.redirect(
-            `${origin}/educator/dashboard`
-        );
+            return NextResponse.redirect(
+                `${origin}/educator/dashboard`
+            );
+
         default:
-        return NextResponse.redirect(
-            `${origin}/student/dashboard`
-        );
+            return NextResponse.redirect(
+                `${origin}/student/dashboard`
+            );
     }
 }

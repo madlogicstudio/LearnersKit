@@ -34,7 +34,7 @@ const numberFormatter = new Intl.NumberFormat("en-US");
 
 export default function EnrollmentChart() {
     return (
-        <section className="w-full rounded-xl border border-gray-200 bg-white p-5 shadow-sm dark:border-gray-800 dark:bg-gray-950">
+        <section className="w-full rounded-xl border border-gray-200 bg-white p-5 shadow-sm dark:border-foreground/10 dark:bg-[var(--card)]">
             <div className="mb-6 flex flex-wrap items-start justify-between gap-3">
                 <div>
                 <h2 className="font-sans text-xl font-semibold text-foreground/80 dark:text-gray-100">

@@ -8,13 +8,14 @@ import { ThemeToggle } from "@/components/ui/ThemeToggle";
 import { UserProfile } from "@/components/dashboard/UserProfile";
 import { Search } from "lucide-react";
 import Dashboard from "../components/Dashboard";
+import Students from "../components/Students";
 
 function page() {
 
-    const [isActive, setIsActive] = useState("dashboard");
+    const [isActive, setIsActive] = useState("students");
 
     return (
-        <div className="h-screen w-full flex flex-row items-start justify-between gap-3 sm:p-3 p-0">
+        <div className="sm:h-screen h-auto w-full flex flex-row items-start justify-between gap-3 sm:p-3 p-0 dark:bg-[var(--border)]">
             
             <div className="h-full sm:flex hidden">
                 <AdminNav isActive={isActive} setIsActive={setIsActive} />
@@ -40,6 +41,7 @@ function page() {
                 
                 <div className="flex-1 w-full flex flex-col overflow-hidden rounded-lg shadow-xl">
                     {isActive === "dashboard" && <Dashboard />}
+                    {isActive === "students" && <Students />}
                 </div>
 
             </div>

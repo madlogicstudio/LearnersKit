@@ -10,7 +10,7 @@
   --accent: #e4ddfa;
 
   --border: #E5E7EB;
-  --card: #FFFFFF;
+  --card: #1d1d1f;
 
 }
 
@@ -22,8 +22,9 @@
   --accent: #f3ebf7;
   
 
-  --border: #374151;
-  --card: #181A19;
+  --border: #121218;
+  --card: #1d1d1f;
+
 }
 
 @theme inline {

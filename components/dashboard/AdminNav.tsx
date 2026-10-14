@@ -13,7 +13,7 @@ type AdminNavProps = {
 export const AdminNav = ({isActive, setIsActive}: AdminNavProps) => {
     return (
         <section className="font-sans h-full sm:flex hidden flex-col items-center justify-between py-6 px-4 gap-3 rounded-lg shadow-xl
-            bg-white shadow-sm dark:border-gray-800 dark:bg-gray-950">
+            bg-white shadow-sm dark:border-foreground/10 dark:bg-[var(--card)]">
 
             <div className="fadeIn flex flex-row items-center gap-3">
                 <Image src="/Web-icon.png" height={32} width={32} alt=""/>

@@ -8,6 +8,7 @@ import Link from "next/link";
 import { Eye, EyeOff, ArrowRight } from "lucide-react";
 import { FcGoogle } from "react-icons/fc";
 import { useRouter } from "next/navigation";
+import { WanderingEyes } from "@/components/ui/WanderingEyes";
 
 function page() {
     const supabase = createClient();
@@ -135,6 +136,8 @@ function page() {
                         .select("role")
                         .eq("id", session.user.id)
                         .single();
+
+                    setLoading(true);
 
                     if (error || !profile) {
                         console.error("Failed to fetch user role:", error);

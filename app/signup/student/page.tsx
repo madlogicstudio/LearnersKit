@@ -55,6 +55,9 @@ function page() {
             options: {
             emailRedirectTo: `${window.location.origin}/auth/callback`,
             captchaToken,
+            data: {
+                role: "student",
+            },
             },
         });
 

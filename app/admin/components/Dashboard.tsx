@@ -14,9 +14,9 @@ import ActiveClassesChart from "@/components/dashboard/ActiveClassesChart";
 function Dashboard() {
     return (
         <div className="h-full w-full overflow-auto hide-scrollbar p-3 flex flex-col sm:gap-6 gap-3 ">
-            <div className="flex sm:flex-row flex-col items-start justify-between gap-3 px-3">
+            <div className="flex sm:flex-row flex-col sm:items-start sm:items-end items-start justify-between gap-3 px-3">
 
-                <span className="flex flex-row items-center gap-3 text-md text-foreground/80">
+                <span className="flex flex-row items-center gap-3 text-lg text-foreground/80">
                     Good morning, Admin!
                     <MdWavingHand
                         size={18}
@@ -24,11 +24,10 @@ function Dashboard() {
                     />
                 </span>
 
-                <span className="text-md text-foreground/60">
+                <span className="text-md text-foreground/60 sm:mb-0 mb-3">
                     Here's what's happening today.
                 </span>
 
-                
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4">
@@ -62,8 +61,6 @@ function Dashboard() {
             </div>
 
             <div className="grid grid-cols-1 gap-6 xl:grid-cols-2">
-                <EnrollmentChart />
-                <ActiveClassesChart />
                 <EnrollmentChart />
                 <ActiveClassesChart />
             </div>
