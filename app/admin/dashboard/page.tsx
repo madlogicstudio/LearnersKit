@@ -9,6 +9,8 @@ import { UserProfile } from "@/components/dashboard/UserProfile";
 import { Search } from "lucide-react";
 import Dashboard from "../components/Dashboard";
 import Students from "../components/Students";
+import Teachers from "../components/Teachers";
+import Courses from "../components/Courses";
 
 function page() {
 
@@ -42,6 +44,8 @@ function page() {
                 <div className="flex-1 w-full flex flex-col overflow-hidden rounded-lg shadow-xl">
                     {isActive === "dashboard" && <Dashboard />}
                     {isActive === "students" && <Students />}
+                    {isActive === "teachers" && <Teachers />}
+                    {isActive === "courses" && <Courses />}
                 </div>
 
             </div>

@@ -48,14 +48,14 @@ function Dashboard() {
                 <DashboardCard
                     title="Total Classes"
                     value="24"
-                    description="Across all grade levels"
+                    description="Across all departments"
                     icon={BookOpen}
                 />
 
                 <DashboardCard
-                    title="Present Today"   
-                    value="94.8%"
-                    description="Student attendance"
+                    title="Total Subjects"   
+                    value="12"
+                    description="Across all classes "
                     icon={UserCheck}
                 />
             </div>

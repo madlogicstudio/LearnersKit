@@ -40,11 +40,11 @@ export const AdminNav = ({isActive, setIsActive}: AdminNavProps) => {
                     <GraduationCap size={26} className="text-[var(--primary)]"/>
                     <span className="text-foreground/80">Teachers</span>
                 </button>
-                <button className={`${isActive === "classes" ? "bg-[var(--accent)] dark:bg-foreground/10" : ""}
+                <button className={`${isActive === "courses" ? "bg-[var(--accent)] dark:bg-foreground/10" : ""}
                     w-full hover:bg-foreground/10 px-3 py-2 rounded-lg transition cursor-pointer flex flex-row items-center gap-3`}
-                    onClick={() => setIsActive("classes")}>
+                    onClick={() => setIsActive("courses")}>
                     <Square size={26} className="text-[var(--primary)]"/>
-                    <span className="text-foreground/80">Classes</span>
+                    <span className="text-foreground/80">Courses</span>
                 </button>
                 <button className={`${isActive === "subjects" ? "bg-[var(--accent)] dark:bg-foreground/10" : ""}
                     w-full hover:bg-foreground/10 px-3 py-2 rounded-lg transition cursor-pointer flex flex-row items-center gap-3`}

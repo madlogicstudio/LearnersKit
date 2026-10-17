@@ -38,10 +38,10 @@ export default function EnrollmentChart() {
             <div className="mb-6 flex flex-wrap items-start justify-between gap-3">
                 <div>
                 <h2 className="font-sans text-xl font-semibold text-foreground/80 dark:text-gray-100">
-                    Student Enrollment
+                    Total Students
                 </h2>
                 <p className="font-sans mt-1 text-md text-gray-500 dark:text-gray-400">
-                    Enrollment overview throughout the year
+                    Students throughout the year
                 </p>
                 </div>
 
@@ -60,7 +60,7 @@ export default function EnrollmentChart() {
                         vertical={false}
                         strokeDasharray="3 3"
                         stroke="currentColor"
-                        className="text-gray-200 dark:text-gray-800"
+                        className="text-foreground/80"
                     />
 
                     <XAxis
@@ -91,7 +91,7 @@ export default function EnrollmentChart() {
                         contentStyle={{
                             borderRadius: "10px",
                             border: "1px solid #e5e7eb",
-                            fontSize: "12px",
+                            fontSize: "12px",   
                         }}
                         formatter={(value) => [
                             numberFormatter.format(Number(value)),
@@ -100,6 +100,7 @@ export default function EnrollmentChart() {
                         labelStyle={{
                             fontWeight: 600,
                             marginBottom: 4,
+                            color: "#24232E"
                         }}
                     />
 

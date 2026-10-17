@@ -5,6 +5,7 @@ import { useState, useEffect } from "react";
 import AddStudentForm from "@/components/dashboard/AddStudentForm";
 import { getStudents } from "@/lib/actions/getStudents";
 import { deleteStudent } from "@/lib/actions/deleteStudent";
+import { WanderingEyes } from "@/components/ui/WanderingEyes";
 
 type Student = {
     id: string;
@@ -64,7 +65,10 @@ function Students() {
         fetchStudents();
     }, []);
 
-    if (loading) return <p>Loading students...</p>;
+    if (loading) return (
+        <div className="h-screen w-full flex flex-col items-center justify-center">
+            <WanderingEyes className="text-[var(--primary)]" />
+        </div>);
     if (error) return <p className="text-red-500">{error}</p>;
 
 
@@ -111,11 +115,16 @@ function Students() {
     return (
         <section className='h-full w-full flex flex-col gap-3 p-3 overflow-auto hide-scrollbar'>
 
-            <div className="flex sm:flex-row flex-col sm:items-start sm:items-end items-start justify-between sm:gap-3 gap-6 p-3">
-            
-                <span className="text-md text-foreground/60">
-                    Manage student profiles, academic information, and records.
-                </span>
+            <div className="flex sm:flex-row flex-col sm:items-end items-start justify-between sm:gap-3 gap-6 p-3">
+
+                <div className="flex flex-col gap-3">
+                    <h1 className="text-2xl font-semibold tracking-tight">
+                        Students
+                    </h1>
+                    <span className="text-md text-foreground/60">
+                        Manage student profiles, academic information, and records.
+                    </span>
+                </div>
 
                 <div className="flex flex-row items-center px-3 py-2 gap-2 rounded-full bg-white shadow-sm dark:border-gray-800 cursor-pointer dark:bg-[var(--card)]"
                     onClick={() => setAddStudent(true)}>
@@ -141,14 +150,31 @@ function Students() {
                     <div className="mb-4 flex flex-row items-center justify-between gap-3">
                         <h1 className="text-lg font-semibold">Students</h1>
                         <p className="text-sm text-foreground/60">
-                            {students.length} student records
+                            {filteredStudents.length}{" "}
+                            {filteredStudents.length === 1
+                                ? "student"
+                                : "students"}
                         </p>
                     </div>
 
-                    {students.length === 0 ? (
-                        <p className="py-6 text-sm text-foreground/80">
-                            No students found.
-                        </p>
+                    {filteredStudents.length === 0 ? (
+                        <div className="py-10 text-center">
+                            <div className="mx-auto mb-3 flex h-12 w-12 items-center justify-center rounded-full bg-[var(--primary)]/15">
+                                <Search size={22} className="text-foreground/60" />
+                            </div>
+
+                            <p className="font-medium text-foreground">
+                                {searchTerm
+                                    ? "No matching student found."
+                                    : "No students found."}
+                            </p>
+
+                            <p className="mt-1 text-sm text-foreground/60">
+                                {searchTerm
+                                    ? "Try another name, teacher ID, or email."
+                                    : "Add a student to get started."}  
+                            </p>
+                        </div>
                     ) : (
                         <>
                             {/* Mobile: Student cards */}
