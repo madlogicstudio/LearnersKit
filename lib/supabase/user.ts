@@ -1,19 +1,29 @@
 import { createClient } from "@/lib/supabase/client";
 
 export async function getCurrentUser() {
-    const supabase = createClient();
+  const supabase = createClient();
 
-    const {
-        data: { user },
-        error,
-    } = await supabase.auth.getUser();
+  const {
+    data: { user },
+    error,
+  } = await supabase.auth.getUser();
 
-    if (error) {
-        console.error("Error getting user:", error);
-        return null;
-    }
+  if (error) {
+    console.error("Error getting user:", error);
+    return null;
+  }
 
-    return user;
+  if (!user) return null;
+
+  const profileImage =
+    user.user_metadata?.avatar_url ||
+    user.user_metadata?.picture ||
+    null;
+
+  return {
+    ...user,
+    profileImage,
+  };
 }
 
 export async function signOut() {

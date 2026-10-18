@@ -1,6 +1,6 @@
 'use client'
 
-import LogoutButton from "@/components/dashboard/LogoutButton"
+import LogoutButton from "@/components/adminDashboard/LogoutButton"
 
 function page() {
     return (

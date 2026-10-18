@@ -8,8 +8,8 @@ import {
 } from "lucide-react";
 import { MdWavingHand } from "react-icons/md";
 import { DashboardCard } from "./DashboardCard";
-import EnrollmentChart from "@/components/dashboard/EnrollmentChart";
-import ActiveClassesChart from "@/components/dashboard/ActiveClassesChart";
+import EnrollmentChart from "@/components/adminDashboard/EnrollmentChart";
+import ActiveClassesChart from "@/components/adminDashboard/ActiveClassesChart";
 
 function Dashboard() {
     return (

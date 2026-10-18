@@ -3,7 +3,7 @@
 
 import { Plus, Search, X, Trash2, LoaderCircle } from "lucide-react";
 import { useState, useEffect } from "react";
-import AddTeacherForm from "@/components/dashboard/AddTeacherForm";
+import AddTeacherForm from "@/components/adminDashboard/AddTeacherForm";
 import { getTeachers } from "@/lib/actions/getTeachers";
 import { deleteTeacher } from "@/lib/actions/deleteTeacher";
 import { WanderingEyes } from "@/components/ui/WanderingEyes";

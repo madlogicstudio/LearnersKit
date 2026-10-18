@@ -1,13 +1,12 @@
-
 "use client";
 
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { WanderingEyes } from "@/components/ui/WanderingEyes";
-import AddDepartment from "@/components/dashboard/AddDepartment";
-import AddCourse from "@/components/dashboard/AddCourse";
-import DeleteDepartment from "@/components/dashboard/DeleteDepartment";
+import AddDepartment from "@/components/adminDashboard/AddDepartment";
+import AddCourse from "@/components/adminDashboard/AddCourse";
+import DeleteDepartment from "@/components/adminDashboard/DeleteDepartment";
 import {
-    BookOpen,
+    GraduationCap,
     Plus,
     Search,
     X,
@@ -490,8 +489,8 @@ export default function Courses() {
                         setDepartmentForm({ name: "" });
                         setIsDepartmentModalOpen(true);
                     }}
-                    className="flex cursor-pointer items-center gap-2 rounded-full bg-white px-4 py-2 text-sm text-foreground shadow-sm transition hover:bg-gray-100 dark:bg-[var(--card)] dark:hover:bg-white/10"
-                    >
+                    className="flex cursor-pointer items-center justify-center gap-2 rounded-full bg-white px-4 py-2 text-sm shadow-sm 
+                        transition hover:bg-gray-100 disabled:cursor-not-allowed disabled:opacity-50 dark:bg-[var(--card)] dark:hover:bg-white/10">
                         <Plus size={16} />
                         Create Department
                     </button>
@@ -505,8 +504,8 @@ export default function Courses() {
                                 ? "Create a department first"
                                 : "Add a new course"
                         }
-                        className="flex cursor-pointer items-center gap-2 rounded-full bg-white px-4 py-2 text-sm text-foreground shadow-sm transition hover:bg-gray-100 dark:bg-[var(--card)] dark:hover:bg-white/10"
-                    >
+                        className="flex cursor-pointer items-center justify-center gap-2 rounded-full bg-white px-4 py-2 text-sm shadow-sm 
+                            transition hover:bg-gray-100 disabled:cursor-not-allowed disabled:opacity-50 dark:bg-[var(--card)] dark:hover:bg-white/10">
                         <Plus size={16} />
                         Add Course
                     </button>
@@ -554,7 +553,7 @@ export default function Courses() {
                         <p className="mt-2 text-3xl font-semibold">{courses.length}</p>
                         </div>
                         <div className="rounded-xl bg-[#C9A0DC]/10 p-3">
-                        <BookOpen size={24} className="text-[var(--primary)]" />
+                        <GraduationCap size={24} className="text-[var(--primary)]" />
                         </div>
                     </div>
                     <span className="text-md text-foreground/60">
@@ -690,96 +689,195 @@ export default function Courses() {
                     </div>
                 )}
 
-                <div className="overflow-x-auto">
-                <table className="w-full min-w-[600px] text-left text-sm">
-                    <thead className="bg-white/[0.02] text-md text-[#9995A2]">
-                    <tr>
-                        <th className="px-5 py-4 font-medium">Course</th>
-                        <th className="px-5 py-4 font-medium">Department</th>
-                        <th className="px-5 py-4 text-right font-medium">Actions</th>
-                    </tr>
-                    </thead>
+                <div className="hidden overflow-x-auto md:block">
+                    <table className="w-full text-left text-sm">
+                        <thead className="bg-white/[0.02] text-[#9995A2]">
+                            <tr>
+                                <th className="px-5 py-4 font-medium">Course</th>
+                                <th className="px-5 py-4 font-medium">Department</th>
+                                <th className="px-5 py-4 text-right font-medium">
+                                    Actions
+                                </th>
+                            </tr>
+                        </thead>
 
-                    <tbody className="divide-y divide-white/[0.06]">
+                        <tbody className="divide-y divide-white/[0.06]">
+                            {filteredCourses.length === 0 ? (
+                                <tr>
+                                    <td colSpan={3} className="px-5 py-14 text-center">
+                                        <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-xl bg-[var(--primary)]/10 text-[var(--primary)]">
+                                            <GraduationCap size={22} />
+                                        </div>
+
+                                        <p className="mt-3 text-lg font-medium">
+                                            {courses.length === 0
+                                                ? "No courses yet"
+                                                : "No matching courses"}
+                                        </p>
+
+                                        <p className="mt-1 text-sm text-[#92909B]">
+                                            {courses.length === 0
+                                                ? "Create a department, then add your first course."
+                                                : "Try another search or department."}
+                                        </p>
+                                    </td>
+                                </tr>
+                            ) : (
+                                filteredCourses.map((course) => (
+                                    <tr
+                                        key={course.id}
+                                        className="transition hover:bg-foreground/[0.025]"
+                                    >
+                                        <td className="px-5 py-4">
+                                            <span className="font-medium">
+                                                {course.name}
+                                            </span>
+                                        </td>
+
+                                        <td className="px-5 py-4 text-foreground/70">
+                                            {course.department?.name ??
+                                                "Department unavailable"}
+                                        </td>
+
+                                        <td className="relative px-5 py-4 text-right">
+                                            <button
+                                                type="button"
+                                                onClick={() =>
+                                                    setMenuCourseId(
+                                                        menuCourseId === course.id
+                                                            ? null
+                                                            : course.id
+                                                    )
+                                                }
+                                                aria-label={`Actions for ${course.name}`}
+                                                className="cursor-pointer rounded-lg p-2 text-[#A6A1AE] hover:bg-foreground/10 hover:text-foreground"
+                                            >
+                                                <MoreHorizontal size={19} />
+                                            </button>
+
+                                            {menuCourseId === course.id && (
+                                                <div className="absolute right-12 top-10 z-20 w-44 rounded-xl border border-foreground/10 bg-white p-2 text-left shadow-xl dark:bg-[var(--card)]">
+                                                    <button
+                                                        type="button"
+                                                        onClick={() => openEditModal(course)}
+                                                        className="flex w-full items-center gap-2 rounded-lg px-3 py-2 text-sm hover:bg-foreground/5"
+                                                    >
+                                                        <Pencil size={14} />
+                                                        Edit course
+                                                    </button>
+
+                                                    <button
+                                                        type="button"
+                                                        onClick={() => {
+                                                            setDeleteTarget(course);
+                                                            setMenuCourseId(null);
+                                                        }}
+                                                        className="flex w-full items-center gap-2 rounded-lg px-3 py-2 text-sm text-red-500 hover:bg-red-400/10"
+                                                    >
+                                                        <Trash2 size={14} />
+                                                        Delete course
+                                                    </button>
+                                                </div>
+                                            )}
+                                        </td>
+                                    </tr>
+                                ))
+                            )}
+                        </tbody>
+                    </table>
+                </div>
+
+                <div className="space-y-3 p-4 md:hidden">
                     {filteredCourses.length === 0 ? (
-                        <tr>
-                        <td colSpan={3} className="px-5 py-14 text-center">
+                        <div className="px-2 py-10 text-center">
                             <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-xl bg-[var(--primary)]/10 text-[var(--primary)]">
-                            <BookOpen size={22} />
+                                <GraduationCap size={22} />
                             </div>
-                            <p className="mt-3 text-lg font-medium">
-                            {courses.length === 0
-                                ? "No courses yet"
-                                : "No matching courses"}
+
+                            <p className="mt-3 font-medium">
+                                {courses.length === 0
+                                    ? "No courses yet"
+                                    : "No matching courses"}
                             </p>
-                            <p className="mt-1 text-md text-[#92909B]">
-                            {courses.length === 0
-                                ? "Create a department, then add your first course."
-                                : "Try another search or department."}
+
+                            <p className="mt-1 text-sm text-foreground/60">
+                                {courses.length === 0
+                                    ? "Create a department, then add your first course."
+                                    : "Try another search or department."}
                             </p>
-                        </td>
-                        </tr>
+                        </div>
                     ) : (
                         filteredCourses.map((course) => (
-                        <tr
-                            key={course.id}
-                            className="transition hover:bg-white/[0.025]"
-                        >
-                            <td className="px-5 py-4">
-                                <div className="flex items-center gap-3">
-                                    <span className="font-medium">{course.name}</span>
-                                </div>
-                            </td>
-
-                            <td className="px-5 py-4">
-                                <div className="flex items-center gap-2 text-foreground/70">
-                                    {course.department?.name ?? "Department unavailable"}
-                                </div>
-                            </td>
-
-                            <td className="relative px-5 py-4 text-right">
-                                <button
-                                    type="button"
-                                    onClick={() =>
-                                    setMenuCourseId(
-                                        menuCourseId === course.id ? null : course.id
-                                    )
-                                    }
-                                    aria-label={`Actions for ${course.name}`}
-                                    className="rounded-lg p-2 text-[#A6A1AE] hover:bg-white/10 hover:text-foreground cursor-pointer"
-                                >
-                                    <MoreHorizontal size={19} />
-                                </button>
-
-                                {menuCourseId === course.id && (
-                                    <div className="text-sm absolute right-16 top-0 z-20 w-42 rounded-lg border border-white/10 bg-white p-3 text-left shadow-xl dark:bg-[#29262F]">
-                                    <button
-                                        type="button"
-                                        onClick={() => openEditModal(course)}
-                                        className="flex w-full items-center gap-2 rounded-lg px-3 py-2 hover:bg-foreground/5"
-                                    >
-                                        <Pencil size={14} />
-                                        Edit course
-                                    </button>
-                                    <button
-                                        type="button"
-                                        onClick={() => {
-                                        setDeleteTarget(course);
-                                        setMenuCourseId(null);
-                                        }}
-                                        className="flex w-full items-center gap-2 rounded-lg px-3 py-2 text-sm text-red-500 hover:bg-red-400/10"
-                                    >
-                                        <Trash2 size={14} />
-                                        Delete course
-                                    </button>
+                            <article
+                                key={course.id}
+                                className="relative rounded-xl border border-foreground/10 bg-white p-4 shadow-sm dark:bg-white/[0.02]"
+                            >
+                                <div className="flex items-start gap-3">
+                                    <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-[var(--primary)]/10 text-[var(--primary)]">
+                                        <GraduationCap size={21} />
                                     </div>
-                                )}
-                            </td>
-                        </tr>
+
+                                    <div className="min-w-0 flex-1 pt-0.5">
+                                        <h3 className="break-words font-semibold text-foreground">
+                                            {course.name}
+                                        </h3>
+
+                                        <p className="mt-1 text-xs text-foreground/50">
+                                            DEPARTMENT
+                                        </p>
+
+                                        <p className="mt-0.5 break-words text-sm text-foreground/70">
+                                            {course.department?.name ??
+                                                "Department unavailable"}
+                                        </p>
+                                    </div>
+
+                                    <div className="relative shrink-0">
+                                        <button
+                                            type="button"
+                                            onClick={() =>
+                                                setMenuCourseId(
+                                                    menuCourseId === course.id
+                                                        ? null
+                                                        : course.id
+                                                )
+                                            }
+                                            aria-label={`Actions for ${course.name}`}
+                                            aria-expanded={menuCourseId === course.id}
+                                            className="cursor-pointer rounded-lg p-2 text-foreground/60 transition hover:bg-foreground/10 hover:text-foreground"
+                                        >
+                                            <MoreHorizontal size={20} />
+                                        </button>
+
+                                        {menuCourseId === course.id && (
+                                            <div className="absolute right-0 top-10 z-30 w-44 rounded-xl border border-foreground/10 bg-white p-2 text-left shadow-xl dark:bg-[var(--card)]">
+                                                <button
+                                                    type="button"
+                                                    onClick={() => openEditModal(course)}
+                                                    className="flex w-full items-center gap-2 rounded-lg px-3 py-2 text-sm hover:bg-foreground/5"
+                                                >
+                                                    <Pencil size={14} />
+                                                    Edit course
+                                                </button>
+
+                                                <button
+                                                    type="button"
+                                                    onClick={() => {
+                                                        setDeleteTarget(course);
+                                                        setMenuCourseId(null);
+                                                    }}
+                                                    className="flex w-full items-center gap-2 rounded-lg px-3 py-2 text-sm text-red-500 hover:bg-red-400/10"
+                                                >
+                                                    <Trash2 size={14} />
+                                                    Delete course
+                                                </button>
+                                            </div>
+                                        )}
+                                    </div>
+                                </div>
+                            </article>
                         ))
                     )}
-                    </tbody>
-                </table>
                 </div>
 
                 <div className="flex flex-col gap-2 border-t border-white/[0.07] px-5 py-4 text-sm text-[#92909B] sm:flex-row sm:items-center sm:justify-between">
@@ -849,8 +947,8 @@ export default function Courses() {
             )}
 
             {deleteTarget && (
-                <div className="fixed inset-0 z-[70] flex items-center justify-center bg-black/60 p-4 backdrop-blur-sm">
-                    <div className="w-full max-w-md rounded-2xl border border-foreground/10 bg-white p-6 shadow-2xl dark:bg-[#201D25]">
+                <div className="fixed inset-0 z-[70] flex items-center justify-center bg-[rgba(0,0,0,0.5)] p-4 backdrop-blur-sm">
+                    <div className="w-full max-w-md rounded-2xl border border-foreground/10 bg-white p-6 shadow-2xl dark:bg-[var(--card)]">
                         <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-red-400/10 text-red-500">
                             <Trash2 size={22} />
                         </div>
