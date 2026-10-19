@@ -1,4 +1,3 @@
-
 "use client";
 
 import { useCallback, useEffect, useMemo, useState } from "react";
@@ -288,7 +287,7 @@ export default function Reports() {
     }
 
     return (
-        <div className="w-full min-w-0 space-y-5 overflow-x-hidden p-3 font-sans text-foreground sm:space-y-6 sm:p-5 lg:p-6">
+        <div className="w-full min-w-0 space-y-5 overflow-x-hidden hide-scrollbar p-3 font-sans text-foreground sm:space-y-6 sm:p-5 lg:p-6">
             <div className="flex min-w-0 flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
                 <div className="min-w-0">
                     <h1 className="text-2xl font-semibold tracking-tight sm:text-3xl">

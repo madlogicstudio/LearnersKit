@@ -5,6 +5,7 @@ import Image from "next/image"
 import Link from "next/link"
 import React from "react"
 import LogoutButton from "./LogoutButton"
+import AdminInviteCode from "./AdminInviteCode"
 
 type AdminNavProps = {
     isActive: string;
@@ -19,7 +20,9 @@ export const AdminNav = ({isActive, setIsActive}: AdminNavProps) => {
             <div className="fadeIn flex flex-row items-center gap-3">
                 <Image src="/Web-icon.png" height={32} width={32} alt=""/>
                 <Link href="/" className="font-sans sm:text-lg text-md tracking-[0.1em] font-semibold text-foreground/80">LearnersKit</Link>               
-            </div> 
+            </div>
+            
+            <AdminInviteCode />
 
             <div className="fadeIn w-full flex flex-col items-start justify-center gap-3 text-sm">
 

@@ -10,6 +10,8 @@ import Link from "next/link"
 import { Grid2X2, Users, Square, ChartPie, BookOpen, Settings, LogOut, GraduationCap } from "lucide-react"
 import { ThemeToggle } from "../ui/ThemeToggle"
 import { UserProfile } from "./UserProfile"
+import AdminInviteCode from "@/components/adminDashboard/AdminInviteCode";
+
 
 type AdminMobileMenu = {
     isActive: string;
@@ -27,9 +29,9 @@ export const AdminMobileMenu = ({isActive, setIsActive}: AdminMobileMenu) => {
                 items-center gap-3 rounded-lg p-2 sm:hidden flex">
                 <Menu size={18} onClick={() => setNavOpen(true)}/>
             </div>
-
-            <div ref={menuRef} className={`w-full h-screen lg:hidden flex flex-col items-start justify-start gap-3 
-                bg-background dark:bg-[var(--card)] fixed top-0 left-0 transition-transform duration-300 p-3 z-10 
+ 
+            <div ref={menuRef} className={`w-full sm:h-screen h-full lg:hidden flex flex-col items-start justify-start gap-3 
+                bg-background dark:bg-[var(--card)] fixed top-0 left-0 transition-transform duration-300 p-3 z-10 overflow-y-auto hide-scrollbar
                 ${navOpen ? "translate-x-0" : "-translate-x-full"}
                 ${!navOpen ? "-translate-x-full" : "translate-x-0"}`}>
                 
@@ -43,6 +45,8 @@ export const AdminMobileMenu = ({isActive, setIsActive}: AdminMobileMenu) => {
                         <Image src="/Web-icon.png" height={32} width={32} alt=""/>
                         <Link href="/" className="font-sans text-lg tracking-[0.1em] font-semibold text-foreground/80">LearnersKit</Link>   
                     </div>
+
+                    <AdminInviteCode />
 
                     <div className="fadeIn w-full flex flex-col items-start justify-center gap-3 text-sm">
 
@@ -104,7 +108,7 @@ export const AdminMobileMenu = ({isActive, setIsActive}: AdminMobileMenu) => {
                         
                     </div>
 
-                    <div className="mt-auto fadeIn w-full flex flex-col items-start gap-3 text-sm">
+                    <div className="mt-auto fadeIn w-full flex flex-col items-start gap-3 text-sm sm:pb-0 pb-6">
                         <span className="text-foreground/60 text-md px-3">Account</span>
                         <button className={`${isActive === "settings" ? "bg-[var(--accent)] dark:bg-foreground/10" : ""}
                             w-full hover:bg-foreground/10 px-3 py-2 rounded-lg transition cursor-pointer flex flex-row items-center gap-3`}
@@ -115,15 +119,7 @@ export const AdminMobileMenu = ({isActive, setIsActive}: AdminMobileMenu) => {
                             <Settings size={26} className="text-[var(--primary)]"/>
                             <span className="text-foreground/80">Settings</span>
                         </button>
-                        <button className={`${isActive === "logout" ? "bg-[var(--accent)] dark:bg-foreground/10" : ""}
-                            w-full hover:bg-foreground/10 px-3 py-2 rounded-lg transition cursor-pointer flex flex-row items-center gap-3`}
-                            onClick={() => {
-                                setIsActive("logout");
-                                setNavOpen(false);
-                            }}>
-                            <LogOut size={26} className="text-[var(--primary)]"/>
-                            <span className="text-foreground/80">Logout</span>
-                        </button>
+                        <LogoutButton />
                     </div>
                     
                 </div>
