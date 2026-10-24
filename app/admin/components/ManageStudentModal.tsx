@@ -16,6 +16,8 @@ type Student = {
     first_name: string;
     last_name: string;
     student_number: string | null;
+    academic_program: string;
+    year_level: string;
 };
 
 type Props = {
@@ -49,7 +51,7 @@ export default function ManageStudentsModal({
         setSuccess("");
 
         try {
-            // Get the currently authenticated administrator.
+            // 1. Get the authenticated administrator.
             const {
                 data: { user },
                 error: authError,
@@ -59,16 +61,14 @@ export default function ManageStudentsModal({
                 throw new Error("Please sign in again.");
             }
 
-            // Retrieve the selected year level's name.
-            const {
-                data: yearLevelData,
-                error: yearLevelError,
-            } = await supabase
-                .from("year_levels")
-                .select("name")
-                .eq("id", yearLevelId)
-                .eq("admin_id", user.id)
-                .maybeSingle();
+            // 2. Get the selected year level.
+            const { data: yearLevelData, error: yearLevelError } =
+                await supabase
+                    .from("year_levels")
+                    .select("id, name, year_number, course_id")
+                    .eq("id", yearLevelId)
+                    .eq("admin_id", user.id)
+                    .maybeSingle();
 
             if (yearLevelError) {
                 throw yearLevelError;
@@ -80,39 +80,71 @@ export default function ManageStudentsModal({
                 );
             }
 
-            // Students store their year level as text,
-            // so compare against the year level's name.
-            const {
-                data: studentData,
-                error: studentError,
-            } = await supabase
-                .from("students")
-                .select(
-                    "id, first_name, last_name, student_number"
-                )
-                .eq("admin_id", user.id)
-                .eq("year_level", yearLevelData.name)
-                .order("last_name");
+            // 3. Get the course.
+            const { data: courseData, error: courseError } =
+                await supabase
+                    .from("courses")
+                    .select("id, name")
+                    .eq("id", yearLevelData.course_id)
+                    .eq("admin_id", user.id)
+                    .maybeSingle();
+
+            if (courseError) {
+                throw courseError;
+            }
+
+            if (!courseData) {
+                throw new Error(
+                    "The course associated with this year level could not be found."
+                );
+            }
+
+            // 4. Normalize course names to handle hyphens and extra spaces.
+            const normalizeCourse = (value: string) =>
+                value
+                    .toLowerCase()
+                    .replace(/[^a-z0-9]/g, "");
+
+            const selectedCourse = normalizeCourse(courseData.name);
+
+            // 5. Get students for this administrator and year.
+            // Course matching is done in JavaScript because the stored
+            // course names differ slightly in formatting.
+            const { data: studentData, error: studentError } =
+                await supabase
+                    .from("students")
+                    .select(
+                        "id, first_name, last_name, student_number, academic_program, year_level"
+                    )
+                    .eq("admin_id", user.id)
+                    .eq("year_level", yearLevelData.name)
+                    .order("last_name");
 
             if (studentError) {
                 throw studentError;
             }
 
-            // Load students already enrolled in this subject.
-            const {
-                data: enrollmentData,
-                error: enrollmentError,
-            } = await supabase
-                .from("student_subjects")
-                .select("student_id")
-                .eq("admin_id", user.id)
-                .eq("subject_id", subjectId);
+            const eligibleStudents = (studentData ?? []).filter(
+                (student) =>
+                    normalizeCourse(student.academic_program ?? "") ===
+                    selectedCourse
+            );
+
+            // 6. Get students already enrolled in this subject.
+            const { data: enrollmentData, error: enrollmentError } =
+                await supabase
+                    .from("student_subjects")
+                    .select("student_id")
+                    .eq("admin_id", user.id)
+                    .eq("subject_id", subjectId);
 
             if (enrollmentError) {
                 throw enrollmentError;
             }
 
-            setStudents((studentData ?? []) as Student[]);
+            // 7. Update the modal.
+            setStudents(eligibleStudents as Student[]);
+
             setEnrolledIds(
                 (enrollmentData ?? []).map(
                     (row) => row.student_id as string

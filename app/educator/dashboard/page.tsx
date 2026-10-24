@@ -12,6 +12,10 @@ import { UserProfile } from "@/components/adminDashboard/UserProfile";
 import Dashboard from "../components/Dashboard";
 import Students from "../components/Students";
 import Settings from "../components/Settings";
+import Subjects from "../components/Subjects";
+import Attendance from "../components/Attendance";
+import Grades from "../components/Grades";
+import Reports from "../components/Reports";
 
 export default function Page() {
     const [isActive, setIsActive] = useState("dashboard");
@@ -73,18 +77,7 @@ export default function Page() {
     const handleInviteSuccess = async () => {
         await checkEducatorProfile();
     };
-
-    if (checkingProfile) {
-        return (
-            <div className="flex h-screen items-center justify-center bg-[#EFEFF4] dark:bg-[var(--border)]">
-                <div className="flex items-center gap-3 text-sm text-foreground/60">
-                    <span className="h-5 w-5 animate-spin rounded-full border-2 border-[var(--primary)] border-t-transparent" />
-                    Loading your educator workspace...
-                </div>
-            </div>
-        );
-    }
-
+ 
     if (pageError) {
         return (
             <div className="flex h-screen items-center justify-center p-6">
@@ -157,11 +150,23 @@ export default function Page() {
                 <div className="flex w-full flex-1 flex-col overflow-hidden rounded-lg shadow-xl">
                     {!needsInvite && isActive === "dashboard" && (
                         <Dashboard />
-                    )}
-
+                    )} 
                     {!needsInvite && isActive === "students" && (
                         <Students />
                     )}
+                    {!needsInvite && isActive === "subjects" && (
+                        <Subjects />
+                    )} 
+                    {!needsInvite && isActive === "attendance" && (
+                        <Attendance />
+                    )}
+                    {!needsInvite && isActive === "grades" && (
+                        <Grades />
+                    )}
+                    {!needsInvite && isActive === "reports" && (
+                        <Reports />
+                    )}
+
                     {!needsInvite && isActive === "settings" && (
                         <Settings />
                     )}

@@ -36,21 +36,21 @@ export const EducatorNav = ({isActive, setIsActive}: EducatorNavProps) => {
                     <Users size={26} className="text-[var(--primary)]"/>
                     <span className="text-foreground/80">Students</span>
                 </button>
-                <button className={`${isActive === "teachers" ? "bg-[var(--accent)] dark:bg-foreground/10" : ""}
-                    w-full hover:bg-foreground/10 px-3 py-2 rounded-lg transition cursor-pointer flex flex-row items-center gap-3`}
-                    onClick={() => setIsActive("teachers")}>
-                    <GraduationCap size={26} className="text-[var(--primary)]"/>
-                    <span className="text-foreground/80">Subjects</span>
-                </button>
-                <button className={`${isActive === "courses" ? "bg-[var(--accent)] dark:bg-foreground/10" : ""}
-                    w-full hover:bg-foreground/10 px-3 py-2 rounded-lg transition cursor-pointer flex flex-row items-center gap-3`}
-                    onClick={() => setIsActive("courses")}>
-                    <Square size={26} className="text-[var(--primary)]"/>
-                    <span className="text-foreground/80">Attendace</span>
-                </button>
                 <button className={`${isActive === "subjects" ? "bg-[var(--accent)] dark:bg-foreground/10" : ""}
                     w-full hover:bg-foreground/10 px-3 py-2 rounded-lg transition cursor-pointer flex flex-row items-center gap-3`}
                     onClick={() => setIsActive("subjects")}>
+                    <GraduationCap size={26} className="text-[var(--primary)]"/>
+                    <span className="text-foreground/80">Subjects</span>
+                </button>
+                <button className={`${isActive === "attendance" ? "bg-[var(--accent)] dark:bg-foreground/10" : ""}
+                    w-full hover:bg-foreground/10 px-3 py-2 rounded-lg transition cursor-pointer flex flex-row items-center gap-3`}
+                    onClick={() => setIsActive("attendance")}>
+                    <Square size={26} className="text-[var(--primary)]"/>
+                    <span className="text-foreground/80">Attendace</span>
+                </button>
+                <button className={`${isActive === "grades" ? "bg-[var(--accent)] dark:bg-foreground/10" : ""}
+                    w-full hover:bg-foreground/10 px-3 py-2 rounded-lg transition cursor-pointer flex flex-row items-center gap-3`}
+                    onClick={() => setIsActive("grades")}>
                     <BookOpen size={26} className="text-[var(--primary)]"/>
                     <span className="text-foreground/80">Grades</span>
                 </button>

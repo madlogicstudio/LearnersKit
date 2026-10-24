@@ -1,6 +1,7 @@
  "use client";
 
 import { useCallback, useEffect, useMemo, useState } from "react";
+import { WanderingEyes } from "@/components/ui/WanderingEyes";
 import {
     Users,
     GraduationCap,
@@ -49,74 +50,125 @@ export default function Students() {
     const [selectedStudent, setSelectedStudent] =
         useState<Student | null>(null);
 
-    const loadStudents = useCallback(async () => {
-        setLoading(true);
-        setError("");
 
-        try {
-            const supabase = createClient();
+const loadStudents = useCallback(async () => {
+    setLoading(true);
+    setError("");
 
-            const {
-                data: { user },
-                error: authError,
-            } = await supabase.auth.getUser();
+    try {
+        const supabase = createClient();
 
-            if (authError) throw authError;
+        const {
+            data: { user },
+            error: authError,
+        } = await supabase.auth.getUser();
 
-            if (!user) {
-                throw new Error("Please sign in to view student records.");
-            }
+        if (authError) throw authError;
+        if (!user) throw new Error("Please sign in again.");
 
-            const { data: profileData, error: profileError } =
-                await supabase
-                    .from("profiles")
-                    .select("role, admin_id")
-                    .eq("id", user.id)
-                    .single();
+        const { data: profile, error: profileError } = await supabase
+            .from("profiles")
+            .select("role, admin_id")
+            .eq("id", user.id)
+            .single();
 
-            if (profileError) throw profileError;
+        if (profileError) throw profileError;
 
-            const profile = profileData as EducatorProfile;
-
-            if (profile.role !== "educator") {
-                throw new Error(
-                    "Only educator accounts can access this page."
-                );
-            }
-
-            if (!profile.admin_id) {
-                throw new Error(
-                    "Your educator account is not linked to an administrator. Please use your administrator's invite code."
-                );
-            }
-
-            const { data, error: studentsError } = await supabase
-                .from("students")
-                .select(
-                    "id, student_number, first_name, last_name, email, gender, department, academic_program, year_level"
-                )
-                .eq("admin_id", profile.admin_id)
-                .order("last_name", { ascending: true });
-
-            if (studentsError) throw studentsError;
-
-            setStudents((data ?? []) as Student[]);
-        } catch (err) {
-            console.error("Failed to load educator students:", err);
-
-            setError(
-                err instanceof Error
-                    ? err.message
-                    : "Something went wrong while loading student records."
-            );
-        } finally {
-            setLoading(false);
+        if (profile.role !== "educator") {
+            throw new Error("Only educators can access this page.");
         }
-    }, []);
 
-    useEffect(() => {
-        void loadStudents();
-    }, [loadStudents]);
+        if (!profile.admin_id) {
+            throw new Error("Your educator account is not linked to an admin.");
+        }
+
+        // Get the subjects assigned to the educator.
+        const { data: assignments, error: assignmentError } = await supabase
+            .from("subject_assignments")
+            .select("subject_id")
+            .eq("educator_id", user.id)
+            .eq("admin_id", profile.admin_id);
+
+        if (assignmentError) throw assignmentError;
+
+        const subjectIds = [
+            ...new Set((assignments ?? []).map((item) => item.subject_id)),
+        ];
+
+        if (subjectIds.length === 0) {
+            setStudents([]);
+            return;
+        }
+
+        console.log("Logged-in educator:", user.id);
+        console.log("Profile:", profile);
+        console.log("Assignments:", assignments);
+        console.log("Assignment error:", assignmentError);
+
+        // Find students enrolled in the assigned subjects.
+        const { data: enrollments, error: enrollmentError } = await supabase
+            .from("student_subjects")
+            .select("student_id")
+            .eq("admin_id", profile.admin_id)
+            .in("subject_id", subjectIds);
+
+        if (enrollmentError) throw enrollmentError;
+
+        const studentIds = [
+            ...new Set((enrollments ?? []).map((item) => item.student_id)),
+        ];
+
+        if (studentIds.length === 0) {
+            setStudents([]);
+            return;
+        }
+
+console.log("Admin ID:", profile.admin_id);
+console.log("Student IDs to fetch:", studentIds);
+
+const { data: studentData, error: studentError } = await supabase
+    .from("students")
+    .select(`
+        id,
+        student_number,
+        first_name,
+        last_name,
+        email,
+        gender,
+        department,
+        academic_program,
+        year_level
+    `)
+    .eq("admin_id", profile.admin_id)
+    .in("id", studentIds);
+
+console.log("Student data:", studentData);
+console.log("Student error:", studentError);
+
+if (studentError) {
+    throw studentError;
+}
+
+setStudents(studentData ?? []);
+    } catch (err) {
+        console.error("Failed to load educator students:", err);
+
+        setStudents([]);
+
+        setError(
+            err instanceof Error
+                ? err.message
+                : "Failed to load student records."
+        );
+    } finally {
+        setLoading(false);
+    }
+}, []);
+
+
+useEffect(() => {
+    loadStudents();
+}, [loadStudents]);
 
     const departments = useMemo(
         () =>
@@ -205,15 +257,23 @@ export default function Students() {
         program !== "all" ||
         yearLevel !== "all";
 
+    if (loading) {
+        return (
+            <div className="flex min-h-screen items-center justify-center">
+                <WanderingEyes className="text-[var(--primary)]" />
+            </div>
+        );
+    }
+
     return (
         <div className="h-full w-full overflow-auto hide-scrollbar p-3">
              
-            <div className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+            <div className="sm:my-6 mb-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
                 <div className="px-3">
-                    <h1 className="text-xl font-semibold text-foreground">
+                    <h1 className="text-2xl font-bold tracking-tight ">
                         Students
                     </h1>
-                    <p className="mt-2 text-sm text-foreground/60">
+                    <p className="mt-3 text-sm text-foreground/60">
                         View student records and academic information.
                     </p>
                 </div>
@@ -222,7 +282,7 @@ export default function Students() {
                     type="button"
                     onClick={() => void loadStudents()}
                     disabled={loading}
-                    className="inline-flex items-center justify-center gap-2 self-start rounded-full bg-white px-5 py-2.5 text-sm font-medium text-foreground shadow-sm transition hover:shadow-md disabled:opacity-50 dark:bg-[var(--card)] sm:self-auto"
+                    className="cursor-pointer inline-flex items-center justify-center gap-2 self-start rounded-full bg-white px-5 py-2.5 text-sm font-medium text-foreground shadow-sm transition hover:shadow-md disabled:opacity-50 dark:bg-[var(--card)] sm:self-auto"
                 >
                     <RefreshCw
                         size={16}
@@ -230,34 +290,6 @@ export default function Students() {
                     />
                     Refresh
                 </button>
-            </div>
-
-            {/* Summary cards */}
-            <div className="mb-6 grid grid-cols-1 gap-4 md:grid-cols-3">
-                <SummaryCard
-                    title="Total Students"
-                    value={
-                        loading
-                            ? "..."
-                            : students.length.toLocaleString("en-US")
-                    }
-                    description="Students available to you"
-                    icon={<Users size={22} />}
-                />
-
-                <SummaryCard
-                    title="Departments"
-                    value={loading ? "..." : departments.length.toString()}
-                    description="Departments represented"
-                    icon={<Building2 size={22} />}
-                />
-
-                <SummaryCard
-                    title="Academic Programs"
-                    value={loading ? "..." : programs.length.toString()}
-                    description="Programs represented"
-                    icon={<GraduationCap size={22} />}
-                />
             </div>
 
             {/* Main student records panel */}
@@ -296,7 +328,7 @@ export default function Students() {
                             onChange={(event) =>
                                 setDepartment(event.target.value)
                             }
-                            className=" cursor-pointer w-full appearance-none rounded-xl border border-foreground/20 bg-transparent px-3 py-3 text-sm text-foreground outline-none focus:border-[var(--primary)]"
+                            className=" cursor-pointer bg-white dark:bg-[var(--card)] w-full appearance-none rounded-xl border border-foreground/20 bg-transparent px-3 py-3 text-sm text-foreground outline-none focus:border-[var(--primary)]"
                         >
                             <option value="all">All Departments</option>
                             {departments.map((item) => (
@@ -317,7 +349,7 @@ export default function Students() {
                             onChange={(event) =>
                                 setYearLevel(event.target.value)
                             }
-                            className="cursor-pointer appearance-none w-full rounded-xl border border-foreground/20 bg-transparent px-3 py-3 text-sm text-foreground outline-none focus:border-[var(--primary)]"
+                            className="cursor-pointer bg-white dark:bg-[var(--card)] appearance-none w-full rounded-xl border border-foreground/20 bg-transparent px-3 py-3 text-sm text-foreground outline-none focus:border-[var(--primary)]"
                         >
                             <option value="all">All Year Levels</option>
                             {yearLevels.map((item) => (
@@ -338,11 +370,11 @@ export default function Students() {
                             onChange={(event) =>
                                 setProgram(event.target.value)
                             }
-                            className="cursor-pointer appearance-none w-full rounded-xl border border-foreground/20 bg-transparent px-3 py-3 text-sm text-foreground outline-none focus:border-[var(--primary)] lg:col-span-2"
+                            className="cursor-pointer bg-white dark:bg-[var(--card)] appearance-none w-full rounded-xl border border-foreground/20 bg-transparent px-3 py-3 text-sm text-foreground outline-none focus:border-[var(--primary)] lg:col-span-2"
                         >
-                            <option value="all">All Academic Programs</option>
+                            <option value="all" className="">All Academic Programs</option>
                             {programs.map((item) => (
-                                <option key={item} value={item}>
+                                <option key={item} value={item} >
                                     {item}
                                 </option>
                             ))}
@@ -357,7 +389,7 @@ export default function Students() {
                         <button
                             type="button"
                             onClick={clearFilters}
-                            className="inline-flex items-center justify-center gap-2 rounded-xl border border-foreground/20 px-3 py-3 text-sm text-foreground/70 transition hover:bg-muted lg:col-span-2"
+                            className="cursor-pointer inline-flex items-center justify-center gap-2 rounded-xl border border-foreground/20 px-3 py-3 text-sm text-foreground/70 transition hover:bg-muted lg:col-span-2"
                         >
                             <FilterX size={16} />
                             Clear filters
@@ -428,10 +460,10 @@ export default function Students() {
                 ) : !error ? (
                     <>
                         {/* Desktop table */}
-                        <div className="hidden overflow-hidden rounded-xl border border-border md:block">
+                        <div className="hidden overflow-hidden rounded-xl border border-foreground/20 md:block">
                             <div className="overflow-x-auto">
                                 <table className="w-full min-w-[850px] text-left text-sm">
-                                    <thead className="border-b border-border bg-muted/30">
+                                    <thead className="border-b border-foreground/20 bg-muted/30">
                                         <tr>
                                             <th className="px-4 py-4 font-medium text-foreground/60">
                                                 Student
@@ -454,7 +486,7 @@ export default function Students() {
                                         </tr>
                                     </thead>
 
-                                    <tbody className="divide-y divide-border">
+                                    <tbody className="divide-y divide-foreground/20">
                                         {filteredStudents.map((student) => (
                                             <tr
                                                 key={student.id}
@@ -498,7 +530,7 @@ export default function Students() {
                                                             setSelectedStudent(student)
                                                         }
                                                         aria-label={`View ${student.first_name} ${student.last_name}`}
-                                                        className="inline-flex items-center gap-2 rounded-lg border border-border px-3 py-2 text-xs font-medium text-foreground transition hover:border-[var(--primary)] hover:text-[var(--secondary)]"
+                                                        className="cursor-pointer inline-flex items-center gap-2 rounded-lg border border-foreground/20 px-3 py-2 text-xs font-medium text-foreground transition hover:border-[var(--primary)] hover:text-[var(--secondary)]"
                                                     >
                                                         <Eye size={15} />
                                                         View
@@ -510,7 +542,7 @@ export default function Students() {
                                 </table>
                             </div>
 
-                            <div className="border-t border-border px-4 py-3 text-xs text-foreground/50">
+                            <div className="border-t border-foreground/20 px-4 py-3 text-sm text-foreground/50">
                                 Showing {filteredStudents.length} of{" "}
                                 {students.length} students
                             </div>
@@ -521,9 +553,9 @@ export default function Students() {
                             {filteredStudents.map((student) => (
                                 <article
                                     key={student.id}
-                                    className="overflow-hidden rounded-xl border border-border"
+                                    className="overflow-hidden rounded-xl border border-foreground/20"
                                 >
-                                    <div className="flex items-center justify-between gap-3 border-b border-border p-4">
+                                    <div className="flex items-center justify-between gap-3 border-b border-foreground/20 p-4">
                                         <div className="flex min-w-0 items-center gap-3">
                                             <Avatar student={student} />
                                             <div className="min-w-0">
@@ -592,7 +624,7 @@ export default function Students() {
                         role="dialog"
                         aria-modal="true"
                         aria-labelledby="student-modal-title"
-                        className="max-h-[90vh] w-full max-w-lg overflow-y-auto rounded-2xl border border-border bg-white p-6 shadow-2xl dark:bg-[var(--card)]"
+                        className="max-h-[90vh] w-full max-w-lg overflow-y-auto rounded-xl border border-foreground/20 bg-white p-6 shadow-2xl dark:bg-[var(--card)]"
                     >
                         <div className="mb-6 flex items-center justify-between">
                             <div>
@@ -611,13 +643,13 @@ export default function Students() {
                                 type="button"
                                 onClick={() => setSelectedStudent(null)}
                                 aria-label="Close student details"
-                                className="rounded-lg p-2 text-foreground/60 transition hover:bg-muted hover:text-foreground"
+                                className="cursor-pointer ml-auto rounded-lg bg-[var(--primary)]/80 p-2 text-white transition hover:bg-[#24232E] disabled:cursor-not-allowed disabled:opacity-50"
                             >
                                 <X size={20} />
                             </button>
                         </div>
 
-                        <div className="mb-6 flex flex-col items-center rounded-xl bg-purple-50/70 p-5 text-center dark:bg-purple-950/20">
+                        <div className="mb-6 flex flex-col items-center rounded-xl bg-[var(--accent)] dark:bg-[#24232E] p-5 text-center">
                             <Avatar student={selectedStudent} large />
                             <h3 className="mt-3 text-lg font-semibold text-foreground">
                                 {selectedStudent.first_name}{" "}
@@ -660,44 +692,9 @@ export default function Students() {
                                 value={selectedStudent.year_level || "—"}
                             />
                         </div>
-
-                        <button
-                            type="button"
-                            onClick={() => setSelectedStudent(null)}
-                            className="mt-7 w-full rounded-xl bg-[var(--primary)] px-4 py-3 text-sm font-semibold text-white transition hover:opacity-90"
-                        >
-                            Close
-                        </button>
                     </section>
                 </div>
             )}
-        </div>
-    );
-}
-
-function SummaryCard({
-    title,
-    value,
-    description,
-    icon,
-}: {
-    title: string;
-    value: string;
-    description: string;
-    icon: React.ReactNode;
-}) {
-    return (
-        <div className="rounded-xl bg-white p-5 shadow-sm dark:bg-[var(--card)] sm:p-6">
-            <div className="flex items-center justify-between gap-3">
-                <p className="text-sm text-foreground/70">{title}</p>
-                <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-purple-50 text-[var(--primary)] dark:bg-purple-950/30">
-                    {icon}
-                </div>
-            </div>
-            <p className="mt-2 text-3xl font-semibold tracking-tight text-foreground">
-                {value}
-            </p>
-            <p className="mt-3 text-sm text-foreground/60">{description}</p>
         </div>
     );
 }
@@ -714,8 +711,8 @@ function Avatar({
 
     return (
         <div
-            className={`flex shrink-0 items-center justify-center rounded-xl bg-purple-100 font-semibold text-purple-700 dark:bg-purple-900/30 dark:text-purple-300 ${
-                large ? "h-16 w-16 text-xl" : "h-11 w-11 text-sm"
+            className={`rounded-xl flex shrink-0 items-center justify-center rounded-xlfont-semibold bg-[var(--primary)] text-white ${
+                large ? "h-16 w-16 text-xl" : "h-11 w-11 text-md"
             }`}
         >
             {initials || <Users size={large ? 26 : 19} />}

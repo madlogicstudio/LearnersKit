@@ -65,28 +65,28 @@ export const EducatorMobileMenu = ({isActive, setIsActive}: EducatorMobileMenuPr
                             <Users size={26} className="text-[var(--primary)]"/>
                             <span className="text-foreground/80">Students</span>
                         </button>
-                        <button className={`${isActive === "teachers" ? "bg-[var(--accent)] dark:bg-foreground/10" : ""}
+                        <button className={`${isActive === "subjects" ? "bg-[var(--accent)] dark:bg-foreground/10" : ""}
                             w-full hover:bg-foreground/10 px-3 py-2 rounded-lg transition cursor-pointer flex flex-row items-center gap-3`}
                             onClick={() => {
-                                setIsActive("teachers");
+                                setIsActive("subjects");
                                 setNavOpen(false);
                             }}>
                             <GraduationCap size={26} className="text-[var(--primary)]"/>
                             <span className="text-foreground/80">Subjects</span>
                         </button>
-                        <button className={`${isActive === "courses" ? "bg-[var(--accent)] dark:bg-foreground/10" : ""}
+                        <button className={`${isActive === "attendance" ? "bg-[var(--accent)] dark:bg-foreground/10" : ""}
                             w-full hover:bg-foreground/10 px-3 py-2 rounded-lg transition cursor-pointer flex flex-row items-center gap-3`}
                             onClick={() => {
-                                setIsActive("courses");
+                                setIsActive("attendance");
                                 setNavOpen(false);
                             }}>
                             <Square size={26} className="text-[var(--primary)]"/>
                             <span className="text-foreground/80">Attendance</span>
                         </button>
-                        <button className={`${isActive === "subjects" ? "bg-[var(--accent)] dark:bg-foreground/10" : ""}
+                        <button className={`${isActive === "grades" ? "bg-[var(--accent)] dark:bg-foreground/10" : ""}
                             w-full hover:bg-foreground/10 px-3 py-2 rounded-lg transition cursor-pointer flex flex-row items-center gap-3`}
                             onClick={() => {
-                                setIsActive("subjects");
+                                setIsActive("grades");
                                 setNavOpen(false);
                             }}>
                             <BookOpen size={26} className="text-[var(--primary)]"/>
