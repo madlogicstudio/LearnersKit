@@ -4,7 +4,7 @@ import { Grid2X2, Users, Square, ChartPie, BookOpen, Settings, LogOut, Graduatio
 import Image from "next/image"
 import Link from "next/link"
 import React from "react"
-import LogoutButton from "./LogoutButton"
+import LogoutButton from "../ui/LogoutButton"
 import AdminInviteCode from "./AdminInviteCode"
 
 type AdminNavProps = {

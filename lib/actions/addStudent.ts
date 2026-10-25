@@ -1,3 +1,4 @@
+
 "use server";
 
 import { createClient } from "@/lib/supabase/server";
@@ -13,10 +14,17 @@ type StudentForm = {
     academic_program: string;
 };
 
-export async function createStudent(form: StudentForm) {
+type CreateStudentResult = {
+    success: boolean;
+    student_id: string;
+    claim_code: string;
+};
+
+export async function createStudent(
+    form: StudentForm
+): Promise<CreateStudentResult> {
     const supabase = await createClient();
 
-    // Get the currently authenticated user
     const {
         data: { user },
         error: authError,
@@ -26,7 +34,6 @@ export async function createStudent(form: StudentForm) {
         throw new Error("You must be logged in to add a student.");
     }
 
-    // Confirm that the user is a School Administrator
     const { data: profile, error: profileError } = await supabase
         .from("profiles")
         .select("role")
@@ -37,15 +44,45 @@ export async function createStudent(form: StudentForm) {
         throw new Error("Only School Administrators can add students.");
     }
 
-    // Insert the student and associate the record with this admin
-    const { error } = await supabase.from("students").insert({
-        ...form,
-        admin_id: user.id,
-    });
+    const { data, error } = await supabase.rpc(
+        "create_student_with_claim_code",
+        {
+            p_student_number: form.student_number,
+            p_first_name: form.first_name,
+            p_last_name: form.last_name,
+            p_email: form.email,
+            p_gender: form.gender || null,
+            p_department: form.department,
+            p_year_level: form.year_level,
+            p_academic_program: form.academic_program,
+        }
+    );
 
     if (error) {
-        throw new Error(error.message);
+        throw new Error(`Failed to create student: ${error.message}`);
     }
 
-    return { success: true };
+    // Support an RPC that returns either one object or one row in an array.
+    const result = Array.isArray(data) ? data[0] : data;
+
+    if (
+        !result ||
+        typeof result !== "object" ||
+        !("student_id" in result) ||
+        !("claim_code" in result) ||
+        typeof result.student_id !== "string" ||
+        typeof result.claim_code !== "string" ||
+        !result.student_id ||
+        !result.claim_code
+    ) {
+        throw new Error(
+            "The student claim code was not returned. Check the return format of create_student_with_claim_code in Supabase."
+        );
+    }
+
+    return {
+        success: true,
+        student_id: result.student_id,
+        claim_code: result.claim_code,
+    };
 }

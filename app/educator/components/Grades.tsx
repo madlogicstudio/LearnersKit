@@ -230,7 +230,10 @@ export default function Grades() {
 
             setAdminId(profile.admin_id);
 
-            const [studentResult, subjectResult] = await Promise.all([
+            const [
+                { data: studentData, error: studentError },
+                { data: assignmentData, error: assignmentError },
+            ] = await Promise.all([
                 supabase
                     .from("students")
                     .select(
@@ -239,18 +242,41 @@ export default function Grades() {
                     .eq("admin_id", profile.admin_id)
                     .order("last_name", { ascending: true }),
 
+                // educator_id references profiles.id, so use user.id.
                 supabase
+                    .from("subject_assignments")
+                    .select("subject_id")
+                    .eq("admin_id", profile.admin_id)
+                    .eq("educator_id", user.id),
+            ]);
+
+            if (studentError) throw studentError;
+            if (assignmentError) throw assignmentError;
+
+            const loadedStudents = (studentData ?? []) as Student[];
+
+            const subjectIds = [
+                ...new Set(
+                    (assignmentData ?? []).map(
+                        (assignment) => assignment.subject_id
+                    )
+                ),
+            ];
+
+            let loadedSubjects: Subject[] = [];
+
+            if (subjectIds.length > 0) {
+                const { data: subjectData, error: subjectError } = await supabase
                     .from("subjects")
                     .select("id, name, code")
                     .eq("admin_id", profile.admin_id)
-                    .order("name", { ascending: true }),
-            ]);
+                    .in("id", subjectIds)
+                    .order("name", { ascending: true });
 
-            if (studentResult.error) throw studentResult.error;
-            if (subjectResult.error) throw subjectResult.error;
+                if (subjectError) throw subjectError;
 
-            const loadedStudents = (studentResult.data ?? []) as Student[];
-            const loadedSubjects = (subjectResult.data ?? []) as Subject[];
+                loadedSubjects = (subjectData ?? []) as Subject[];
+            }
 
             setStudents(loadedStudents);
             setSubjects(loadedSubjects);
@@ -269,6 +295,7 @@ export default function Grades() {
                     ? current.subject_id
                     : loadedSubjects[0]?.id ?? "",
             }));
+
         } catch (err) {
             setError(
                 err instanceof Error

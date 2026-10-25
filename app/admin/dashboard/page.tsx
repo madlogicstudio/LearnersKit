@@ -1,6 +1,6 @@
 'use client'
 
-import LogoutButton from "@/components/adminDashboard/LogoutButton"
+import LogoutButton from "@/components/ui/LogoutButton"
 import { AdminNav } from "@/components/adminDashboard/AdminNav"
 import { AdminMobileMenu } from "@/components/adminDashboard/AdminMobileMenu"
 import { useState } from "react";
@@ -17,7 +17,7 @@ import Settings from "../components/Settings";
 
 function page() {
 
-    const [isActive, setIsActive] = useState("students");
+    const [isActive, setIsActive] = useState("dashboard");
 
     return (
         <div className="sm:h-screen h-auto w-full flex flex-row items-start justify-between gap-3 sm:p-3 p-0 dark:bg-[var(--border)]">

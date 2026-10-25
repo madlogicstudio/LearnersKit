@@ -5,7 +5,7 @@ import { useCallback, useEffect, useState } from "react";
 import { createClient } from "@/lib/supabase/client"; 
 import { EducatorNav } from "@/components/educatorDashboard/EducatorNav";
 import { EducatorMobileMenu } from "@/components/educatorDashboard/EducatorMobileMenu";
-import { AdminInviteModal } from "../components/AdminInviteModal";  
+import { AdminInviteModal } from "../../../components/ui/AdminInviteModal";  
 import { ThemeToggle } from "@/components/ui/ThemeToggle";
 import { UserProfile } from "@/components/adminDashboard/UserProfile";
 

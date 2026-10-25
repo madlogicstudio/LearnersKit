@@ -197,10 +197,19 @@ export default function Attendance() {
             setEducatorId(user.id);
             setAdminId(profile.admin_id);
 
+            // Load the teacher record, students, and educator's assignments.
             const [
+                { data: teacher, error: teacherError },
                 { data: studentData, error: studentError },
-                { data: subjectData, error: subjectError },
+                { data: assignmentData, error: assignmentError },
             ] = await Promise.all([
+                supabase
+                    .from("teachers")
+                    .select("id")
+                    .eq("user_id", user.id)
+                    .eq("admin_id", profile.admin_id)
+                    .maybeSingle(),
+
                 supabase
                     .from("students")
                     .select(
@@ -209,20 +218,52 @@ export default function Attendance() {
                     .eq("admin_id", profile.admin_id)
                     .order("last_name", { ascending: true }),
 
+                // educator_id references profiles.id, so use user.id.
                 supabase
+                    .from("subject_assignments")
+                    .select("subject_id")
+                    .eq("admin_id", profile.admin_id)
+                    .eq("educator_id", user.id),
+            ]);
+
+            if (teacherError) throw teacherError;
+            if (studentError) throw studentError;
+            if (assignmentError) throw assignmentError;
+
+            if (!teacher) {
+                console.warn(
+                    "No teacher record was visible for the current educator."
+                );
+            }
+
+            setStudents((studentData ?? []) as Student[]);
+
+            // Get unique subject IDs assigned to this educator.
+            const subjectIds = [
+                ...new Set(
+                    (assignmentData ?? []).map(
+                        (assignment) => assignment.subject_id
+                    )
+                ),
+            ];
+
+            if (subjectIds.length === 0) {
+                setSubjects([]);
+            } else {
+                const { data: subjectData, error: subjectError } = await supabase
                     .from("subjects")
                     .select("id, name, code")
                     .eq("admin_id", profile.admin_id)
-                    .order("name", { ascending: true }),
-            ]);
+                    .in("id", subjectIds)
+                    .order("name", { ascending: true });
 
-            if (studentError) throw studentError;
-            if (subjectError) throw subjectError;
+                if (subjectError) throw subjectError;
 
-            setStudents((studentData ?? []) as Student[]);
-            setSubjects((subjectData ?? []) as Subject[]);
+                setSubjects((subjectData ?? []) as Subject[]);
+            }
         } catch (err) {
             console.error("Failed to load attendance page:", err);
+
             setError(
                 err instanceof Error
                     ? err.message

@@ -4,7 +4,7 @@ import { useState, useRef } from "react"
 import { Menu, X } from "lucide-react"
 import { RiHome9Fill, RiUser3Fill, RiLayoutGridFill, RiBarChart2Fill } from "react-icons/ri"
 import { PiGearSixFill } from "react-icons/pi"
-import LogoutButton from "../adminDashboard/LogoutButton"
+import LogoutButton from "../ui/LogoutButton"
 import Image from "next/image"
 import Link from "next/link"
 import { Grid2X2, Users, Square, ChartPie, BookOpen, Settings, LogOut, GraduationCap } from "lucide-react"
@@ -115,15 +115,7 @@ export const EducatorMobileMenu = ({isActive, setIsActive}: EducatorMobileMenuPr
                             <Settings size={26} className="text-[var(--primary)]"/>
                             <span className="text-foreground/80">Settings</span>
                         </button>
-                        <button className={`${isActive === "logout" ? "bg-[var(--accent)] dark:bg-foreground/10" : ""}
-                            w-full hover:bg-foreground/10 px-3 py-2 rounded-lg transition cursor-pointer flex flex-row items-center gap-3`}
-                            onClick={() => {
-                                setIsActive("logout");
-                                setNavOpen(false);
-                            }}>
-                            <LogOut size={26} className="text-[var(--primary)]"/>
-                            <span className="text-foreground/80">Logout</span>
-                        </button>
+                        <LogoutButton />
                     </div>
                     
                 </div>

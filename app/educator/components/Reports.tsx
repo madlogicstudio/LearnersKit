@@ -236,10 +236,10 @@ export default function Reports() {
 
                 setEducatorId(user.id);
                 setAdminId(profile.admin_id);
-
+ 
                 const [
                     studentsResult,
-                    subjectsResult,
+                    assignmentsResult,
                     attendanceResult,
                     gradesResult,
                 ] = await Promise.all([
@@ -251,11 +251,12 @@ export default function Reports() {
                         .eq("admin_id", profile.admin_id)
                         .order("last_name", { ascending: true }),
 
+                    // educator_id references profiles.id, so use user.id.
                     supabase
-                        .from("subjects")
-                        .select("id, name, code")
+                        .from("subject_assignments")
+                        .select("subject_id")
                         .eq("admin_id", profile.admin_id)
-                        .order("name", { ascending: true }),
+                        .eq("educator_id", user.id),
 
                     supabase
                         .from("attendance")
@@ -276,16 +277,46 @@ export default function Reports() {
                 ]);
 
                 if (studentsResult.error) throw studentsResult.error;
-                if (subjectsResult.error) throw subjectsResult.error;
+                if (assignmentsResult.error) throw assignmentsResult.error;
                 if (attendanceResult.error) throw attendanceResult.error;
                 if (gradesResult.error) throw gradesResult.error;
 
+                const assignedSubjectIds = [
+                    ...new Set(
+                        (assignmentsResult.data ?? []).map(
+                            (assignment) => assignment.subject_id
+                        )
+                    ),
+                ];
+
+                let loadedSubjects: Subject[] = [];
+
+                if (assignedSubjectIds.length > 0) {
+                    const { data: subjectData, error: subjectError } = await supabase
+                        .from("subjects")
+                        .select("id, name, code")
+                        .eq("admin_id", profile.admin_id)
+                        .in("id", assignedSubjectIds)
+                        .order("name", { ascending: true });
+
+                    if (subjectError) throw subjectError;
+
+                    loadedSubjects = (subjectData ?? []) as Subject[];
+                }
+
                 setStudents((studentsResult.data ?? []) as Student[]);
-                setSubjects((subjectsResult.data ?? []) as Subject[]);
-                setAttendance(
-                    (attendanceResult.data ?? []) as AttendanceRecord[]
-                );
+                setSubjects(loadedSubjects);
+                setAttendance((attendanceResult.data ?? []) as AttendanceRecord[]);
                 setGrades((gradesResult.data ?? []) as GradeRecord[]);
+
+                // Keep the selected subject valid after loading or refreshing.
+                setSelectedSubject((current) =>
+                    current === "all" ||
+                    loadedSubjects.some((subject) => subject.id === current)
+                        ? current
+                        : "all"
+                );
+
             } catch (err) {
                 console.error("Failed to load reports:", err);
 
