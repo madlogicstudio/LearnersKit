@@ -132,16 +132,16 @@ function FilterSelect({
     disabled?: boolean;
 }) {
     return (
-        <div className="relative min-w-0">
+        <div className="relative min-w-0 ">
             <select
                 value={value}
                 disabled={disabled}
                 onChange={(event) => onChange(event.target.value)}
                 className={selectClass}
             >
-                <option value="">{placeholder}</option>
+                <option value="" className="text-[#24232E]">{placeholder}</option>
                 {options.map((option) => (
-                    <option key={option.value} value={option.value}>
+                    <option key={option.value} value={option.value} className="text-[#24232E]">
                         {option.label}
                     </option>
                 ))}
@@ -693,104 +693,197 @@ export default function Grades() {
     };
 
     // Save grades using the existing grade column.
-    const handleSaveGrades = async () => {
-        if (!selectedRequirement) {
-            setError("Please select an academic requirement.");
-            return;
-        }
+    
+const handleSaveGrades = async () => {
+    if (!selectedRequirement) {
+        setError("Please select an academic requirement.");
+        return;
+    }
 
-        setError("");
-        setSuccess("");
+    setError("");
+    setSuccess("");
 
-        const maxScore = Math.min(
-            Number(selectedRequirement.max_score),
-            100
+    const maxScore = Math.min(
+        Number(selectedRequirement.max_score),
+        100
+    );
+
+    const studentsWithGrades = students.filter(
+        (student) =>
+            (gradeEntries[student.id]?.grade ?? "").trim() !== ""
+    );
+
+    const invalidStudent = studentsWithGrades.find((student) => {
+        const raw = gradeEntries[student.id]?.grade ?? "";
+        return !gradeIsValid(raw, maxScore);
+    });
+
+    if (invalidStudent) {
+        setError(
+            `Enter a valid grade between 0 and ${maxScore} for ${invalidStudent.first_name} ${invalidStudent.last_name}.`
         );
+        return;
+    }
 
-        const invalidStudent = students.find((student) => {
-            const raw = gradeEntries[student.id]?.grade ?? "";
+    if (studentsWithGrades.length === 0) {
+        setError("Enter at least one grade before saving.");
+        return;
+    }
 
-            return raw.trim() !== "" && !gradeIsValid(raw, maxScore);
-        });
+    setSaving(true);
 
-        if (invalidStudent) {
-            setError(
-                `Enter a valid grade between 0 and ${maxScore} for ${invalidStudent.first_name} ${invalidStudent.last_name}.`
+    try {
+        const {
+            data: { user },
+            error: authError,
+        } = await supabase.auth.getUser();
+
+        if (authError) throw authError;
+
+        if (!user) {
+            throw new Error(
+                "Your session has expired. Please sign in again."
             );
-            return;
         }
 
-        const studentsWithGrades = students.filter(
-            (student) =>
-                (gradeEntries[student.id]?.grade ?? "").trim() !== ""
-        );
-
-        if (studentsWithGrades.length === 0) {
-            setError("Enter at least one grade before saving.");
-            return;
+        if (!adminId) {
+            throw new Error(
+                "Administrator could not be identified. Refresh the page and try again."
+            );
         }
 
-        setSaving(true);
+        // Confirm the requirement belongs to this educator and institution.
+        const { data: requirement, error: requirementError } =
+            await supabase
+                .from("academic_requirements")
+                .select("id, subject_id, semester, grading_period")
+                .eq("id", selectedRequirement.id)
+                .eq("admin_id", adminId)
+                .eq("educator_id", user.id)
+                .maybeSingle();
 
-        try {
-            const {
-                data: { user },
-                error: authError,
-            } = await supabase.auth.getUser();
+        if (requirementError) throw requirementError;
 
-            if (authError) throw authError;
+        if (!requirement) {
+            throw new Error(
+                "This requirement could not be verified for your educator account. Refresh the page and select it again."
+            );
+        }
 
-            if (!user) {
-                throw new Error(
-                    "Your session has expired. Please log in again."
-                );
-            }
+        const records = studentsWithGrades.map((student) => ({
+            admin_id: adminId,
+            educator_id: user.id,
+            student_id: student.id,
+            subject_id: requirement.subject_id,
+            semester: requirement.semester,
+            grading_period: requirement.grading_period,
+            requirement_id: requirement.id,
+            grade: Number(gradeEntries[student.id].grade),
+            remarks:
+                gradeEntries[student.id].remarks.trim() || null,
+            updated_at: new Date().toISOString(),
+        }));
 
-            if (!adminId) {
-                throw new Error(
-                    "Administrator could not be identified. Refresh the page and try again."
-                );
-            }
-
-            const records = studentsWithGrades.map((student) => ({
-                admin_id: adminId,
-                educator_id: user.id,
-                student_id: student.id,
-                subject_id: selectedRequirement.subject_id,
-                semester: selectedRequirement.semester,
-                grading_period: selectedRequirement.grading_period,
-                requirement_id: selectedRequirement.id,
-                grade: Number(gradeEntries[student.id].grade),
-                remarks:
-                    gradeEntries[student.id].remarks.trim() || null,
-                updated_at: new Date().toISOString(),
-            }));
-
-            const { error: saveError } = await supabase
+        // Find existing grades for this requirement.
+        const { data: existingGrades, error: existingError } =
+            await supabase
                 .from("grades")
-                .upsert(records, {
-                    onConflict: "requirement_id,student_id",
-                });
+                .select("id, student_id")
+                .eq("admin_id", adminId)
+                .eq("educator_id", user.id)
+                .eq("requirement_id", requirement.id);
 
-            if (saveError) throw saveError;
+        if (existingError) throw existingError;
 
-            setSuccess(
-                `Grades saved for ${records.length} student${
-                    records.length === 1 ? "" : "s"
-                }.`
+        const existingByStudent = new Map<
+            string,
+            { id: string; student_id: string }[]
+        >();
+
+        for (const existing of existingGrades ?? []) {
+            const studentRecords =
+                existingByStudent.get(existing.student_id) ?? [];
+
+            studentRecords.push({
+                id: existing.id,
+                student_id: existing.student_id,
+            });
+
+            existingByStudent.set(
+                existing.student_id,
+                studentRecords
             );
-
-            await loadRequirementGrades(selectedRequirement);
-        } catch (err) {
-            setError(
-                err instanceof Error
-                    ? err.message
-                    : "Unable to save student grades."
-            );
-        } finally {
-            setSaving(false);
         }
-    };
+
+        const recordsToInsert: typeof records = [];
+        let updatedCount = 0;
+
+        // Update existing rows by primary key; queue missing rows for insert.
+        for (const record of records) {
+            const matches =
+                existingByStudent.get(record.student_id) ?? [];
+
+            if (matches.length === 0) {
+                recordsToInsert.push(record);
+                continue;
+            }
+
+            // Update all matching rows if old duplicate records exist.
+            for (const existing of matches) {
+                const { error: updateError } = await supabase
+                    .from("grades")
+                    .update({
+                        grade: record.grade,
+                        remarks: record.remarks,
+                        subject_id: record.subject_id,
+                        semester: record.semester,
+                        grading_period: record.grading_period,
+                        updated_at: record.updated_at,
+                    })
+                    .eq("id", existing.id)
+                    .eq("admin_id", adminId)
+                    .eq("educator_id", user.id)
+                    .eq("requirement_id", requirement.id);
+
+                if (updateError) throw updateError;
+            }
+
+            updatedCount++;
+        }
+
+        // Insert only grades that do not already have a row.
+        if (recordsToInsert.length > 0) {
+            const { error: insertError } = await supabase
+                .from("grades")
+                .insert(recordsToInsert);
+
+            if (insertError) throw insertError;
+        }
+
+        setSuccess(
+            `Grades saved successfully for ${records.length} student${
+                records.length === 1 ? "" : "s"
+            } (${updatedCount} updated, ${recordsToInsert.length} inserted).`
+        );
+
+        await loadRequirementGrades(selectedRequirement);
+    } catch (err: unknown) {
+        console.error("Save student grades failed:", err);
+
+        const message =
+            typeof err === "object" &&
+            err !== null &&
+            "message" in err &&
+            typeof err.message === "string"
+                ? err.message
+                : "An unexpected error occurred while saving grades.";
+
+        setError(`Unable to save student grades: ${message}`);
+    } finally {
+        setSaving(false);
+    }
+};
+
 
     const handleDeleteRequirement = async () => {
         if (!requirementToDelete) return;

@@ -2,6 +2,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { WanderingEyes } from "@/components/ui/WanderingEyes";
 import {
     Users,
     BookOpen,
@@ -392,6 +393,14 @@ export default function Dashboard() {
 
     const formatCount = (value: number) =>
         loading ? "..." : numberFormatter.format(value);
+
+    if (loading) {
+        return (
+            <div className="flex min-h-screen items-center justify-center">
+                <WanderingEyes className="text-[var(--primary)]" />
+            </div>
+        );
+    }
 
     return (
         <div className="flex h-full min-h-0 w-full min-w-0 flex-col gap-5 overflow-x-hidden overflow-y-auto p-3 hide-scrollbar sm:gap-6 sm:p-6">

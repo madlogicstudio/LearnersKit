@@ -10,6 +10,10 @@ import { StudentMobileMenu } from "@/components/studentDashboard/StudentMobileMe
 import StudentClaimModal from "../components/StudentClaimModal";
 import Settings from "../components/Settings";
 import Dashboard from "../components/Dashboard";
+import Subjects from "../components/Subjects";
+import Attendance from "../components/Attendance";
+import Grades from "../components/Grades";
+import AcademicRecords from "../components/AcademicRecords";
 
 export default function Page() {
     const [isActive, setIsActive] = useState("dashboard");
@@ -155,7 +159,18 @@ export default function Page() {
                     {!needsClaimCode && isActive === "dashboard" && (
                         <Dashboard />
                     )}
-
+                    {!needsClaimCode && isActive === "subjects" && (
+                        <Subjects />
+                    )}
+                    {!needsClaimCode && isActive === "attendance" && (
+                        <Attendance />
+                    )}
+                    {!needsClaimCode && isActive === "grades" && (
+                        <Grades />
+                    )}
+                    {!needsClaimCode && isActive === "academic-records" && (
+                        <AcademicRecords />
+                    )}
                     {!needsClaimCode && isActive === "settings" && (
                         <Settings />
                     )}
