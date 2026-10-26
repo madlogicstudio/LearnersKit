@@ -945,7 +945,7 @@ export default function Grades() {
                                 type="button"
                                 aria-label="Close grade details"
                                 onClick={() => setSelectedRequirement(null)}
-                                className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl border border-foreground/20 bg-white transition hover:bg-foreground/5 dark:bg-[var(--card)]"
+                                className="bg-[var(--primary)]/80 transition cursor-pointer text-white items-center gap-3 rounded-lg p-2 hover:bg-[#24232E] disabled:opacity-50"
                             >
                                 <X className="h-4 w-4" />
                             </button>
@@ -1053,14 +1053,7 @@ export default function Grades() {
                                         "No remarks have been added for this requirement."}
                                 </p>
                             </div>
-
-                            <button
-                                type="button"
-                                onClick={() => setSelectedRequirement(null)}
-                                className="w-full rounded-xl border border-foreground/20 bg-white px-4 py-2.5 text-sm font-medium transition hover:bg-foreground/5 dark:bg-[var(--card)]"
-                            >
-                                Close
-                            </button>
+                            
                         </div>
                     </section>
                 </div>
