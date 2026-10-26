@@ -1252,52 +1252,74 @@ const handleSaveGrades = async () => {
                     </>
                 )}
             </section>
-
+   
             {/* Student grades modal */}
             {selectedRequirement && (
                 <div
-                    className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-3 sm:p-6"
+                    className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-0 sm:p-4"
                     onMouseDown={(event) => {
                         if (event.target === event.currentTarget && !saving) {
                             setSelectedRequirement(null);
                         }
                     }}
                 >
-                    <section className="flex max-h-[92vh] w-full max-w-6xl flex-col overflow-hidden rounded-2xl border border-foreground/20 bg-white shadow-xl dark:bg-[var(--card)]">
-                        <div className="flex items-start justify-between gap-4 border-b border-foreground/20 p-5">
+                    <section className="flex h-[100dvh] max-h-[100dvh] w-full flex-col overflow-hidden bg-white dark:bg-[var(--card)] sm:h-auto sm:max-h-[92dvh] sm:max-w-6xl sm:rounded-2xl sm:border sm:border-foreground/20 sm:shadow-xl">
+                        {/* Fixed requirement header */}
+                        <div className="flex shrink-0 items-start justify-between gap-3 border-b border-foreground/20 p-4 sm:p-5">
                             <div className="min-w-0">
-                                <h2 className="text-lg font-semibold">{selectedRequirement.name}</h2>
+                                <h2 className="break-words text-lg font-semibold text-foreground">
+                                    {selectedRequirement.name}
+                                </h2>
                                 <p className="mt-1 text-sm text-muted-foreground">
-                                    {selectedSubjectDetails?.name} · {selectedRequirement.semester} · {selectedRequirement.grading_period} · Maximum score: {selectedRequirement.max_score}
+                                    {selectedSubjectDetails?.name}
+                                </p>
+                                <p className="mt-1 text-sm text-muted-foreground">
+                                    {selectedRequirement.semester} · {selectedRequirement.grading_period}
+                                </p>
+                                <p className="mt-1 text-sm text-muted-foreground">
+                                    Maximum score: {selectedRequirement.max_score}
                                 </p>
                             </div>
+
                             <button
                                 type="button"
                                 onClick={() => setSelectedRequirement(null)}
                                 disabled={saving}
-                                className="ml-auto rounded-lg bg-[var(--primary)]/80 p-2 text-white transition hover:bg-[#24232E] disabled:opacity-50"
+                                className="bg-[var(--primary)]/80 transition cursor-pointer text-white items-center gap-3 rounded-lg p-2 hover:bg-[#24232E] disabled:opacity-50"
                                 aria-label="Close grades modal"
                             >
                                 <X size={18} />
                             </button>
                         </div>
 
-                        <div className="grid grid-cols-1 gap-3 border-b border-foreground/20 p-4 sm:grid-cols-3">
+                        {/* Summary cards */}
+                        <div className="grid shrink-0 grid-cols-3 gap-2 border-b border-foreground/20 p-3 sm:gap-3 sm:p-4">
                             {[
                                 ["Total Students", students.length],
                                 ["Graded", gradedCount],
                                 ["Pending", pendingCount],
                             ].map(([label, value]) => (
-                                <div key={String(label)} className="rounded-xl border border-foreground/20 p-3">
-                                    <p className="text-xs text-muted-foreground">{label}</p>
-                                    <p className="mt-1 text-xl font-semibold">{value}</p>
+                                <div
+                                    key={String(label)}
+                                    className="min-w-0 rounded-xl border border-foreground/20 p-2.5 sm:p-3"
+                                >
+                                    <p className="text-sm leading-tight text-muted-foreground">
+                                        {label}
+                                    </p>
+                                    <p className="mt-1 text-xl font-semibold text-foreground">
+                                        {value}
+                                    </p>
                                 </div>
                             ))}
                         </div>
 
-                        <div className="grid grid-cols-1 gap-3 border-b border-foreground/20 p-4 sm:grid-cols-2 lg:grid-cols-5">
-                            <div className="relative sm:col-span-2 lg:col-span-1">
-                                <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
+                        {/* Search and filters */}
+                        <div className="grid shrink-0 grid-cols-2 gap-2 border-b border-foreground/20 p-3 sm:grid-cols-2 sm:gap-3 sm:p-4 lg:grid-cols-5">
+                            <div className="relative col-span-2 lg:col-span-1">
+                                <Search
+                                    size={16}
+                                    className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground"
+                                />
                                 <input
                                     value={search}
                                     onChange={(event) => setSearch(event.target.value)}
@@ -1305,9 +1327,28 @@ const handleSaveGrades = async () => {
                                     className={`${inputClass} pl-9`}
                                 />
                             </div>
-                            <FilterSelect value={departmentFilter} onChange={setDepartmentFilter} placeholder="All departments" options={departmentOptions} />
-                            <FilterSelect value={programFilter} onChange={setProgramFilter} placeholder="All programs" options={programOptions} />
-                            <FilterSelect value={yearFilter} onChange={setYearFilter} placeholder="All year levels" options={yearOptions} />
+
+                            <FilterSelect
+                                value={departmentFilter}
+                                onChange={setDepartmentFilter}
+                                placeholder="All departments"
+                                options={departmentOptions}
+                            />
+
+                            <FilterSelect
+                                value={programFilter}
+                                onChange={setProgramFilter}
+                                placeholder="All programs"
+                                options={programOptions}
+                            />
+
+                            <FilterSelect
+                                value={yearFilter}
+                                onChange={setYearFilter}
+                                placeholder="All year levels"
+                                options={yearOptions}
+                            />
+
                             <FilterSelect
                                 value={gradeFilter}
                                 onChange={setGradeFilter}
@@ -1317,41 +1358,54 @@ const handleSaveGrades = async () => {
                                     { label: "Pending", value: "pending" },
                                 ]}
                             />
+
                             {hasActiveFilters && (
                                 <button
                                     type="button"
                                     onClick={clearFilters}
-                                    className="text-left text-xs text-muted-foreground underline sm:col-span-2 lg:col-span-5"
+                                    className="col-span-2 text-left text-sm text-muted-foreground underline lg:col-span-5"
                                 >
                                     Clear filters
                                 </button>
                             )}
                         </div>
 
+                        {/* Error message */}
                         {error && (
-                            <div className="mx-4 mt-3 flex items-start gap-2 rounded-xl border border-red-200 bg-red-50 p-3 text-sm text-red-700 dark:bg-red-950/30 dark:text-red-300">
+                            <div className="mx-3 mt-3 flex shrink-0 items-start gap-2 rounded-xl border border-red-200 bg-red-50 p-3 text-sm text-red-700 dark:border-red-900 dark:bg-red-950/30 dark:text-red-300 sm:mx-4">
                                 <AlertCircle size={17} className="mt-0.5 shrink-0" />
-                                <p>{error}</p>
+                                <p className="min-w-0 flex-1 break-words">{error}</p>
+                                <button
+                                    type="button"
+                                    onClick={() => setError("")}
+                                    aria-label="Dismiss error"
+                                >
+                                    <X size={16} />
+                                </button>
                             </div>
                         )}
 
-                        <div className="min-h-0 flex-1 overflow-auto">
+                        {/* Only this section scrolls */}
+                        <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain">
                             {gradesLoading ? (
                                 <div className="flex items-center justify-center gap-2 p-12 text-sm text-muted-foreground">
                                     <LoaderCircle size={18} className="animate-spin" />
                                     Loading student grades...
                                 </div>
                             ) : filteredStudents.length === 0 ? (
-                                <div className="p-12 text-center">
+                                <div className="p-8 text-center sm:p-12">
                                     <Users size={30} className="mx-auto text-muted-foreground" />
                                     <p className="mt-3 font-medium">No students found</p>
-                                    <p className="mt-1 text-sm text-muted-foreground">Try changing your search or filters.</p>
+                                    <p className="mt-1 text-sm text-muted-foreground">
+                                        Try changing your search or filters.
+                                    </p>
                                 </div>
                             ) : (
                                 <>
+                                    {/* Desktop table */}
                                     <div className="hidden md:block">
                                         <table className="w-full text-left text-sm">
-                                            <thead className="sticky top-0 z-10 border-b border-foreground/20 bg-background text-xs uppercase text-muted-foreground">
+                                            <thead className="sticky top-0 z-10 border-b border-foreground/20 bg-background text-sm uppercase text-muted-foreground">
                                                 <tr>
                                                     <th className="px-5 py-3 font-medium">Student</th>
                                                     <th className="px-5 py-3 font-medium">Student Number</th>
@@ -1364,37 +1418,65 @@ const handleSaveGrades = async () => {
                                                 {filteredStudents.map((student) => {
                                                     const entry = gradeEntries[student.id];
                                                     const raw = entry?.grade ?? "";
-                                                    const valid = gradeIsValid(raw, Math.min(Number(selectedRequirement.max_score), 100));
+                                                    const maxScore = Math.min(
+                                                        Number(selectedRequirement.max_score),
+                                                        100
+                                                    );
+                                                    const valid = gradeIsValid(raw, maxScore);
 
                                                     return (
                                                         <tr key={student.id}>
                                                             <td className="px-5 py-3">
-                                                                <p className="font-medium">{student.first_name} {student.last_name}</p>
-                                                                <p className="mt-0.5 text-xs text-muted-foreground">{student.email || "No email"}</p>
+                                                                <p className="font-medium">
+                                                                    {student.first_name} {student.last_name}
+                                                                </p>
+                                                                <p className="mt-1 text-sm text-muted-foreground">
+                                                                    {student.email || "No email"}
+                                                                </p>
                                                             </td>
-                                                            <td className="px-5 py-3 text-muted-foreground">{student.student_number}</td>
+                                                            <td className="px-5 py-3 text-muted-foreground">
+                                                                {student.student_number}
+                                                            </td>
                                                             <td className="w-36 px-5 py-3">
                                                                 <input
                                                                     type="number"
                                                                     min={0}
-                                                                    max={Math.min(Number(selectedRequirement.max_score), 100)}
+                                                                    max={maxScore}
                                                                     step="any"
                                                                     value={raw}
-                                                                    onChange={(event) => updateGradeEntry(student.id, "grade", event.target.value)}
-                                                                    placeholder={`0–${Math.min(Number(selectedRequirement.max_score), 100)}`}
+                                                                    onChange={(event) =>
+                                                                        updateGradeEntry(
+                                                                            student.id,
+                                                                            "grade",
+                                                                            event.target.value
+                                                                        )
+                                                                    }
+                                                                    placeholder={`0–${maxScore}`}
                                                                     className={inputClass}
                                                                 />
                                                             </td>
                                                             <td className="min-w-52 px-5 py-3">
                                                                 <input
                                                                     value={entry?.remarks ?? ""}
-                                                                    onChange={(event) => updateGradeEntry(student.id, "remarks", event.target.value)}
+                                                                    onChange={(event) =>
+                                                                        updateGradeEntry(
+                                                                            student.id,
+                                                                            "remarks",
+                                                                            event.target.value
+                                                                        )
+                                                                    }
                                                                     placeholder="Optional remarks"
                                                                     className={inputClass}
                                                                 />
                                                             </td>
                                                             <td className="px-5 py-3">
-                                                                <span className={`rounded-full border border-foreground/20 px-2.5 py-1 text-xs ${valid ? "text-green-700 dark:text-green-300" : "text-muted-foreground"}`}>
+                                                                <span
+                                                                    className={`rounded-full border border-foreground/20 px-2.5 py-1 text-sm ${
+                                                                        valid
+                                                                            ? "text-green-700 dark:text-green-300"
+                                                                            : "text-muted-foreground"
+                                                                    }`}
+                                                                >
                                                                     {valid ? "Graded" : "Pending"}
                                                                 </span>
                                                             </td>
@@ -1405,43 +1487,79 @@ const handleSaveGrades = async () => {
                                         </table>
                                     </div>
 
-                                    <div className="grid gap-3 p-4 md:hidden">
+                                    {/* Mobile student cards */}
+                                    <div className="grid gap-3 p-3 md:hidden">
                                         {filteredStudents.map((student) => {
                                             const entry = gradeEntries[student.id];
                                             const raw = entry?.grade ?? "";
-                                            const maxScore = Math.min(Number(selectedRequirement.max_score), 100);
+                                            const maxScore = Math.min(
+                                                Number(selectedRequirement.max_score),
+                                                100
+                                            );
                                             const valid = gradeIsValid(raw, maxScore);
 
                                             return (
-                                                <div key={student.id} className="rounded-xl border border-foreground/20 p-4">
+                                                <div
+                                                    key={student.id}
+                                                    className="rounded-xl border border-foreground/20 p-4"
+                                                >
                                                     <div className="flex items-start justify-between gap-3">
                                                         <div className="min-w-0">
-                                                            <p className="font-medium">{student.first_name} {student.last_name}</p>
-                                                            <p className="mt-1 text-xs text-muted-foreground">{student.student_number}</p>
+                                                            <p className="break-words font-medium text-foreground">
+                                                                {student.first_name} {student.last_name}
+                                                            </p>
+                                                            <p className="mt-1 text-sm text-muted-foreground">
+                                                                {student.student_number}
+                                                            </p>
                                                         </div>
-                                                        <span className="rounded-full border border-foreground/20 px-2 py-1 text-xs">
+
+                                                        <span
+                                                            className={`shrink-0 rounded-full border border-foreground/20 px-2 py-1 text-sm ${
+                                                                valid
+                                                                    ? "text-green-700 dark:text-green-300"
+                                                                    : "text-muted-foreground"
+                                                            }`}
+                                                        >
                                                             {valid ? "Graded" : "Pending"}
                                                         </span>
                                                     </div>
+
                                                     <div className="mt-4 grid grid-cols-1 gap-3">
                                                         <div>
-                                                            <label className="mb-1.5 block text-xs font-medium">Grade (out of {maxScore})</label>
+                                                            <label className="mb-1.5 block text-sm font-medium">
+                                                                Grade (out of {maxScore})
+                                                            </label>
                                                             <input
                                                                 type="number"
                                                                 min={0}
                                                                 max={maxScore}
                                                                 step="any"
                                                                 value={raw}
-                                                                onChange={(event) => updateGradeEntry(student.id, "grade", event.target.value)}
+                                                                onChange={(event) =>
+                                                                    updateGradeEntry(
+                                                                        student.id,
+                                                                        "grade",
+                                                                        event.target.value
+                                                                    )
+                                                                }
                                                                 placeholder="Enter grade"
                                                                 className={inputClass}
                                                             />
                                                         </div>
+
                                                         <div>
-                                                            <label className="mb-1.5 block text-xs font-medium">Remarks</label>
+                                                            <label className="mb-1.5 block text-sm font-medium">
+                                                                Remarks
+                                                            </label>
                                                             <input
                                                                 value={entry?.remarks ?? ""}
-                                                                onChange={(event) => updateGradeEntry(student.id, "remarks", event.target.value)}
+                                                                onChange={(event) =>
+                                                                    updateGradeEntry(
+                                                                        student.id,
+                                                                        "remarks",
+                                                                        event.target.value
+                                                                    )
+                                                                }
                                                                 placeholder="Optional remarks"
                                                                 className={inputClass}
                                                             />
@@ -1455,26 +1573,34 @@ const handleSaveGrades = async () => {
                             )}
                         </div>
 
-                        <div className="flex flex-col gap-3 border-t border-foreground/20 p-4 sm:flex-row sm:items-center sm:justify-between">
+                        {/* Fixed footer: always visible */}
+                        <div className="flex shrink-0 flex-col gap-3 border-t border-foreground/20 bg-white p-3 pb-[max(0.75rem,env(safe-area-inset-bottom))] dark:bg-[var(--card)] sm:flex-row sm:items-center sm:justify-between sm:p-4">
                             <p className="text-sm text-muted-foreground">
-                                Showing {filteredStudents.length} of {students.length} students. Empty grades remain pending.
+                                Showing {filteredStudents.length} of {students.length} students.
+                                {" "}Empty grades remain pending.
                             </p>
-                            <div className="flex gap-2">
+
+                            <div className="flex w-full gap-2 sm:w-auto">
                                 <button
                                     type="button"
                                     onClick={() => setSelectedRequirement(null)}
                                     disabled={saving}
-                                    className="flex-1 rounded-xl border border-foreground/20 px-4 py-2.5 text-sm font-medium hover:bg-foreground/5 sm:flex-none"
+                                    className="flex-1 rounded-xl border border-foreground/20 px-4 py-2.5 text-sm font-medium transition hover:bg-foreground/5 disabled:opacity-50 sm:flex-none"
                                 >
                                     Close
                                 </button>
+
                                 <button
                                     type="button"
                                     onClick={() => void handleSaveGrades()}
                                     disabled={saving || gradesLoading}
                                     className={`${buttonPrimaryClass} flex-1 sm:flex-none`}
                                 >
-                                    {saving ? <LoaderCircle size={16} className="animate-spin" /> : <Save size={16} />}
+                                    {saving ? (
+                                        <LoaderCircle size={16} className="animate-spin" />
+                                    ) : (
+                                        <Save size={16} />
+                                    )}
                                     Save Grades
                                 </button>
                             </div>
@@ -1482,6 +1608,7 @@ const handleSaveGrades = async () => {
                     </section>
                 </div>
             )}
+
 
             {/* Create / edit requirement modal */}
             {showCreateModal && (
