@@ -67,7 +67,7 @@ function Header() {
                 </div>
 
                 <div className="w-full mt-auto flex flex-col items-center gap-3 justify-between py-4 px-3 mb-12">
-                    <Link href="/signup"
+                    <Link href="/login"
                         className="w-full text-center border border-[var(--primary)] font-semibold text-foreground/80 rounded-full px-3 py-2 text-sm cursor-pointer">Login</Link>
                     <Link href="/signup"
                         className="w-full text-center text-white bg-[var(--primary)] font-semibold rounded-full px-3 py-2 text-sm cursor-pointer">Get Started</Link>
